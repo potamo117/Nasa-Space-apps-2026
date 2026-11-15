@@ -2,6 +2,7 @@ import { imagenIcono } from "../ui/iconos.js";
 const IMG_FRESA = imagenIcono("🍓");
 const IMG_TOMATE = imagenIcono("🍅");
 import { nivelDe } from "../core/dificultad.js";
+import { t } from "../core/i18n.js";
 export function iniciar(contenedor, onTerminar) {
   let destruido = false;
   let victoryTimerId = null;
@@ -38,7 +39,7 @@ export function iniciar(contenedor, onTerminar) {
             <div>
               <div class="cm-title-row">
                 <h1 class="cm-font-orbitron cm-main-title">
-                  BASE LUNAR ARTEMIS · INVERNADERO HIDROPÓNICO
+                  ${t("BASE LUNAR ARTEMIS · INVERNADERO HIDROPÓNICO")}
                 </h1>
                 <div class="cm-leds">
                   <span class="cm-led cm-led-green"></span>
@@ -46,13 +47,13 @@ export function iniciar(contenedor, onTerminar) {
                   <span class="cm-led cm-led-amber"></span>
                 </div>
               </div>
-              <span class="cm-badge-module">🥗 MÓDULO DE PRODUCCIÓN DE COMIDA (ESPECTRO LED)</span>
+              <span class="cm-badge-module">🥗 ${t("MÓDULO DE PRODUCCIÓN DE COMIDA (ESPECTRO LED)")}</span>
             </div>
           </div>
 
           <button type="button" data-el="btnAudio" class="cm-juicy-btn cm-btn-audio">
             <span data-el="audioIcon">🔊</span>
-            <span>Sonido</span>
+            <span>${t("Sonido")}</span>
           </button>
         </header>
 
@@ -72,14 +73,14 @@ export function iniciar(contenedor, onTerminar) {
             </div>
             <div>
               <div class="cm-font-orbitron cm-arty-tag">
-                🤖 MENSAJE DE ARTY · FOTOSÍNTESIS CON LUCES LED
+                🤖 ${t("MENSAJE DE ARTY · FOTOSÍNTESIS CON LUCES LED")}
               </div>
               <p data-el="artyText" class="cm-arty-msg"></p>
             </div>
           </div>
 
           <div data-el="statusPill" class="cm-font-orbitron cm-status-pill">
-            💡 CALIBRA LAS LUCES
+            💡 ${t("CALIBRA LAS LUCES")}
           </div>
         </section>
 
@@ -89,22 +90,22 @@ export function iniciar(contenedor, onTerminar) {
           <div class="cm-col-left">
             <div class="cm-meters-grid">
               <div class="cm-crt-screen cm-meter-box">
-                <div class="cm-font-orbitron cm-meter-label" style="color:#fcd34d;">📋 RECETA FOTOSÍNTESIS</div>
+                <div class="cm-font-orbitron cm-meter-label" style="color:#fcd34d;">📋 ${t("RECETA FOTOSÍNTESIS")}</div>
                 <div class="cm-font-orbitron cm-recipe-values">
                   <span class="cm-glow-red">🔴 ${targetRed}</span>
                   <span style="color:#64748b;">|</span>
                   <span class="cm-glow-blue">🔵 ${targetBlue}</span>
                 </div>
-                <div class="cm-meter-sub" style="color:#6ee7b7;">¡Activa ambas luces en verde!</div>
+                <div class="cm-meter-sub" style="color:#6ee7b7;">${t("¡Activa ambas luces en verde!")}</div>
               </div>
 
               <div data-el="photosynthesisCard" class="cm-crt-screen cm-meter-box is-emerald-border">
-                <div class="cm-font-orbitron cm-meter-label" style="color:#6ee7b7;">🌿 FOTOSÍNTESIS</div>
+                <div class="cm-font-orbitron cm-meter-label" style="color:#6ee7b7;">🌿 ${t("FOTOSÍNTESIS")}</div>
                 <div data-el="photosynthesisPercent" class="cm-font-orbitron cm-meter-val cm-glow-amber">
                   30%
                 </div>
                 <div data-el="photosynthesisHelper" class="cm-meter-sub" style="color:#fcd34d;">
-                  Ajusta Roja y Azul
+                  ${t("Ajusta Roja y Azul")}
                 </div>
               </div>
             </div>
@@ -112,15 +113,15 @@ export function iniciar(contenedor, onTerminar) {
             <!-- CÁMARA HIDROPÓNICA -->
             <div class="cm-crt-screen cm-tank-box">
               <div class="cm-font-chakra cm-tank-header">
-                <span style="color:#6ee7b7;">🌱 CULTIVO HIDROPÓNICO ARTEMIS</span>
-                <span class="cm-tap-hint">👆 ¡TOCA LOS FRUTOS PARA COSECHARLOS!</span>
+                <span style="color:#6ee7b7;">🌱 ${t("CULTIVO HIDROPÓNICO ARTEMIS")}</span>
+                <span class="cm-tap-hint">👆 ${t("¡TOCA LOS FRUTOS PARA COSECHARLOS!")}</span>
               </div>
 
               <canvas data-el="greenhouseCanvas" class="cm-tank-canvas"></canvas>
 
               <div class="cm-tank-legend">
-                <span>🍅 <strong>Tomate Lunar (+7%)</strong></span>
-                <span>🍓 <strong>Fresa Espacial Dorada (+14%)</strong></span>
+                <span>🍅 <strong>${t("Tomate Lunar (+7%)")}</strong></span>
+                <span>🍓 <strong>${t("Fresa Espacial Dorada (+14%)")}</strong></span>
               </div>
             </div>
           </div>
@@ -131,7 +132,7 @@ export function iniciar(contenedor, onTerminar) {
             <div class="cm-led-card is-red">
               <div class="cm-slider-top">
                 <span class="cm-font-orbitron" style="font-size:0.75rem;font-weight:700;color:#fda4af;">
-                  🔴 LUZ ROJA (Meta: ${targetRed})
+                  🔴 ${t("LUZ ROJA (Meta: {n})", { n: targetRed })}
                 </span>
                 <span data-el="redValBadge" class="cm-font-orbitron cm-val-badge is-red">${initialRed}</span>
               </div>
@@ -141,7 +142,7 @@ export function iniciar(contenedor, onTerminar) {
 
               <div class="cm-font-orbitron cm-slider-scale">
                 <span>1</span>
-                <span data-el="redZoneHint" style="color:#fda4af;">Zona óptima: ${targetRed - 1} – ${targetRed + 1}</span>
+                <span data-el="redZoneHint" style="color:#fda4af;">${t("Zona óptima: {a} – {b}", { a: targetRed - 1, b: targetRed + 1 })}</span>
                 <span>10</span>
               </div>
             </div>
@@ -150,7 +151,7 @@ export function iniciar(contenedor, onTerminar) {
             <div class="cm-led-card is-blue">
               <div class="cm-slider-top">
                 <span class="cm-font-orbitron" style="font-size:0.75rem;font-weight:700;color:#7dd3fc;">
-                  🔵 LUZ AZUL (Meta: ${targetBlue})
+                  🔵 ${t("LUZ AZUL (Meta: {n})", { n: targetBlue })}
                 </span>
                 <span data-el="blueValBadge" class="cm-font-orbitron cm-val-badge is-blue">${initialBlue}</span>
               </div>
@@ -160,7 +161,7 @@ export function iniciar(contenedor, onTerminar) {
 
               <div class="cm-font-orbitron cm-slider-scale">
                 <span>1</span>
-                <span data-el="blueZoneHint" style="color:#7dd3fc;">Zona óptima: ${targetBlue - 1} – ${targetBlue + 1}</span>
+                <span data-el="blueZoneHint" style="color:#7dd3fc;">${t("Zona óptima: {a} – {b}", { a: targetBlue - 1, b: targetBlue + 1 })}</span>
                 <span>10</span>
               </div>
             </div>
@@ -168,7 +169,7 @@ export function iniciar(contenedor, onTerminar) {
             <!-- BARRA RACIONES COSECHADAS -->
             <div class="cm-crt-screen cm-progress-box">
               <div class="cm-font-orbitron cm-progress-top">
-                <span style="font-size:0.8rem;color:#6ee7b7;">🥗 RACIONES COSECHADAS</span>
+                <span style="font-size:0.8rem;color:#6ee7b7;">🥗 ${t("RACIONES COSECHADAS")}</span>
                 <span data-el="foodPercentText" class="cm-glow-green" style="font-size:1.3rem;">0%</span>
               </div>
 
@@ -184,10 +185,10 @@ export function iniciar(contenedor, onTerminar) {
           <div class="cm-chassis-panel cm-victory-card">
             <div style="font-size:3.5rem;">🥗</div>
             <h2 class="cm-font-orbitron cm-glow-green" style="margin:0;font-size:1.5rem;font-weight:900;">
-              ¡COSECHA LUNAR COMPLETADA AL 100%!
+              ${t("¡COSECHA LUNAR COMPLETADA AL 100%!")}
             </h2>
             <p style="margin:0;font-size:0.92rem;color:#e2e8f0;line-height:1.45;">
-              ¡Excelente trabajo! Calibraste el espectro LED rojo (<strong>${targetRed}</strong>) y azul (<strong>${targetBlue}</strong>) a la perfección y llenaste la despensa de comida fresca para toda la Base Lunar Artemis.
+              ${t("¡Excelente trabajo! Calibraste el espectro LED rojo (<strong>{r}</strong>) y azul (<strong>{b}</strong>) a la perfección y llenaste la despensa de comida fresca para toda la Base Lunar Artemis.", { r: targetRed, b: targetBlue })}
             </p>
           </div>
         </div>
@@ -345,30 +346,30 @@ export function iniciar(contenedor, onTerminar) {
     redBadge.classList.remove("is-red", "is-ok");
     if (redOk) {
       redBadge.classList.add("is-ok");
-      redHint.textContent = "✅ ¡Luz Roja perfecta!";
+      redHint.textContent = t("✅ ¡Luz Roja perfecta!");
       redHint.style.color = "#6ee7b7";
       if (!game.wasRedOptimal) sfx.spectrumLock();
     } else {
       redBadge.classList.add("is-red");
       redHint.textContent =
         game.redVal < game.targetRed
-          ? `⬆️ Sube hacia ${game.targetRed}`
-          : `⬇️ Baja hacia ${game.targetRed}`;
+          ? t("⬆️ Sube hacia {n}", { n: game.targetRed })
+          : t("⬇️ Baja hacia {n}", { n: game.targetRed });
       redHint.style.color = "#fda4af";
     }
 
     blueBadge.classList.remove("is-blue", "is-ok");
     if (blueOk) {
       blueBadge.classList.add("is-ok");
-      blueHint.textContent = "✅ ¡Luz Azul perfecta!";
+      blueHint.textContent = t("✅ ¡Luz Azul perfecta!");
       blueHint.style.color = "#6ee7b7";
       if (!game.wasBlueOptimal) sfx.spectrumLock();
     } else {
       blueBadge.classList.add("is-blue");
       blueHint.textContent =
         game.blueVal < game.targetBlue
-          ? `⬆️ Sube hacia ${game.targetBlue}`
-          : `⬇️ Baja hacia ${game.targetBlue}`;
+          ? t("⬆️ Sube hacia {n}", { n: game.targetBlue })
+          : t("⬇️ Baja hacia {n}", { n: game.targetBlue });
       blueHint.style.color = "#7dd3fc";
     }
 
@@ -381,27 +382,27 @@ export function iniciar(contenedor, onTerminar) {
     if (redOk && blueOk) {
       photoPct.className = "cm-font-orbitron cm-meter-val cm-glow-green";
       photoCard.classList.add("is-green-active");
-      photoHelper.textContent = "🌟 ¡FOTOSÍNTESIS AL MÁXIMO!";
+      photoHelper.textContent = t("🌟 ¡FOTOSÍNTESIS AL MÁXIMO!");
       photoHelper.style.color = "#6ee7b7";
 
-      statusPill.textContent = "🌱 ¡COSECHA ACTIVA!";
+      statusPill.textContent = t("🌱 ¡COSECHA ACTIVA!");
       statusPill.classList.add("is-green");
 
       artyText.innerHTML =
-        '<strong style="color:#6ee7b7;">¡Espectro perfecto!</strong> Las plantas están creciendo rápido. <strong style="color:#fcd34d;">¡Toca los tomates y fresas</strong> para llenar la despensa!';
+        t('<strong style="color:#6ee7b7;">¡Espectro perfecto!</strong> Las plantas están creciendo rápido. <strong style="color:#fcd34d;">¡Toca los tomates y fresas</strong> para llenar la despensa!');
     } else {
       photoPct.className = "cm-font-orbitron cm-meter-val cm-glow-amber";
       photoCard.classList.add("is-emerald-border");
       photoHelper.textContent =
         !redOk && !blueOk
-          ? `Ajusta Luz Roja (${game.targetRed}) y Azul (${game.targetBlue})`
+          ? t("Ajusta Luz Roja ({r}) y Azul ({b})", { r: game.targetRed, b: game.targetBlue })
           : !redOk
-          ? `Falta calibrar Luz Roja (${game.targetRed})`
-          : `Falta calibrar Luz Azul (${game.targetBlue})`;
+          ? t("Falta calibrar Luz Roja ({n})", { n: game.targetRed })
+          : t("Falta calibrar Luz Azul ({n})", { n: game.targetBlue });
       photoHelper.style.color = "#fcd34d";
 
-      statusPill.textContent = "💡 CALIBRA LAS LUCES";
-      artyText.innerHTML = `<strong style="color:#fda4af;">Paso 1:</strong> Ajusta la <strong style="color:#fda4af;">Luz Roja (${game.targetRed})</strong> y la <strong style="color:#7dd3fc;">Luz Azul (${game.targetBlue})</strong>. <strong style="color:#6ee7b7;">Paso 2:</strong> ¡Toca los frutos maduros para cosechar!`;
+      statusPill.textContent = t("💡 CALIBRA LAS LUCES");
+      artyText.innerHTML = t('<strong style="color:#fda4af;">Paso 1:</strong> Ajusta la <strong style="color:#fda4af;">Luz Roja ({r})</strong> y la <strong style="color:#7dd3fc;">Luz Azul ({b})</strong>. <strong style="color:#6ee7b7;">Paso 2:</strong> ¡Toca los frutos maduros para cosechar!', { r: game.targetRed, b: game.targetBlue });
     }
 
     game.wasRedOptimal = redOk;

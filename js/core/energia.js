@@ -18,7 +18,13 @@ export const RECUPERACION_BONUS = 13;        // extra si se eligió "reparación
 const TICK_MS = 1000;                        // la simulación avanza cada segundo real
 // Radiación es al revés: 100 = peligro, 0 = seguro.
 
-const NOMBRES = { comida: "comida", agua: "agua", oxigeno: "oxígeno", radiacion: "radiación" };
+// Motivos de derrota (el texto en español es la clave de traducción; se traduce al mostrarlo).
+const MOTIVOS = {
+  comida: "Te quedaste sin comida.",
+  agua: "Te quedaste sin agua.",
+  oxigeno: "Te quedaste sin oxígeno.",
+  radiacion: "La radiación llegó al nivel crítico.",
+};
 let timer = null;
 
 const limitar = (v) => Math.max(0, Math.min(100, v));
@@ -85,7 +91,7 @@ function tick() {
     const critico = esRadiacion(s) ? estado[s] >= 100 : estado[s] <= 0;
     if (critico) {
       terminarMisionPorDerrota(
-        esRadiacion(s) ? "La radiación llegó al nivel crítico." : `Te quedaste sin ${NOMBRES[s]}.`
+        MOTIVOS[s]
       );
       return;
     }

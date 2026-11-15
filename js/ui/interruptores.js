@@ -1,6 +1,7 @@
 //cabina
 import { emitir } from "../core/bus.js";
 import { sonido } from "./audio.js";
+import { t } from "../core/i18n.js";
 
 export function inicializarInterruptores(estado) {
   const botones = document.querySelectorAll('[data-toggle-sector]');
@@ -13,7 +14,7 @@ export function inicializarInterruptores(estado) {
 
       btn.classList.toggle('active', encendido);
       const textoEstado = document.getElementById(`st-${sector}`);
-      textoEstado.textContent = encendido ? 'CONECTADO' : 'APAGADO';
+      textoEstado.textContent = encendido ? t('CONECTADO') : t('APAGADO');
       textoEstado.classList.toggle('off', !encendido);
       sonido.click();
       emitir('estado-cambio', {}); // refresca costos y prioridades al instante
