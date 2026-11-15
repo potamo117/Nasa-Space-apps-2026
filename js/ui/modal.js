@@ -4,6 +4,7 @@ import { emitir } from "../core/bus.js";
 
 const $ = (id) => document.getElementById(id);
 let cerrarEnlazado = false;
+let limpiarMinijuego = null;
 
 function enlazarCierre() {
   if (cerrarEnlazado) return;
@@ -12,6 +13,10 @@ function enlazarCierre() {
 }
 
 export function cerrarModal() {
+  if (limpiarMinijuego) {
+    limpiarMinijuego();
+    limpiarMinijuego = null;
+  }
   const modal = $("modal-minijuego");
   if (modal) modal.classList.add("hidden");
   const cont = $("modal-contenedor-juego");
@@ -39,7 +44,8 @@ export function abrirModal(sector) {
     .then((modulo) => {
       if (typeof modulo.iniciar !== "function") return mostrarSimulacion(sector, cont, alTerminar);
       cont.innerHTML = "";
-      modulo.iniciar(cont, alTerminar);
+      const limpiar = modulo.iniciar(cont, alTerminar);
+      limpiarMinijuego = typeof limpiar === "function" ? limpiar : null;
     })
     .catch((err) => {
       console.warn(`[modal] no se pudo cargar el minijuego de ${sector}:`, err);

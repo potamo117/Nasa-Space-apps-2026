@@ -141,6 +141,9 @@
       this.completado = false;
       this.timerId = null;
       this.particulas = [];
+      this.root = opciones.root || document;
+      this.destroyed = false;
+      this.rafId = null;
 
       this.cacheDOM();
       this.crearSegmentosMedidor();
@@ -150,19 +153,20 @@
     }
 
     cacheDOM() {
-      this.gridEl = document.getElementById('pipe-grid');
-      this.monitorEl = document.getElementById('monitor-bezel');
-      this.statusTextEl = document.getElementById('monitor-status');
-      this.readoutFlowEl = document.getElementById('readout-flow');
-      this.readoutNodesEl = document.getElementById('readout-nodes');
-      this.readoutMovesEl = document.getElementById('readout-moves');
-      this.readoutFilterEl = document.getElementById('readout-filter');
-      this.gaugeValEl = document.getElementById('gauge-val');
-      this.gaugeSegmentsEl = document.getElementById('gauge-segments');
-      this.btnVerificar = document.getElementById('btn-verificar');
-      this.btnNuevo = document.getElementById('btn-nuevo-circuito');
-      this.btnSonido = document.getElementById('btn-sonido');
-      this.canvasConfetti = document.getElementById('confetti-canvas');
+      const $ = (id) => this.root.querySelector(`#${id}`);
+      this.gridEl = $('pipe-grid');
+      this.monitorEl = $('monitor-bezel');
+      this.statusTextEl = $('monitor-status');
+      this.readoutFlowEl = $('readout-flow');
+      this.readoutNodesEl = $('readout-nodes');
+      this.readoutMovesEl = $('readout-moves');
+      this.readoutFilterEl = $('readout-filter');
+      this.gaugeValEl = $('gauge-val');
+      this.gaugeSegmentsEl = $('gauge-segments');
+      this.btnVerificar = $('btn-verificar');
+      this.btnNuevo = $('btn-nuevo-circuito');
+      this.btnSonido = $('btn-sonido');
+      this.canvasConfetti = $('confetti-canvas');
     }
 
     crearSegmentosMedidor() {
@@ -640,6 +644,7 @@
     iniciarLoopParticulas() {
       let last = performance.now();
       const tick = (now) => {
+        if (this.destroyed) return;
         const dt = Math.min(0.05, (now - last) / 1000);
         last = now;
 
@@ -675,9 +680,16 @@
           }
         }
 
-        requestAnimationFrame(tick);
+        this.rafId = requestAnimationFrame(tick);
       };
-      requestAnimationFrame(tick);
+      this.rafId = requestAnimationFrame(tick);
+    }
+
+    destruir() {
+      this.destroyed = true;
+      if (this.timerId) clearInterval(this.timerId);
+      if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+      if (this.sonido.ctx && this.sonido.ctx.state !== 'closed') this.sonido.ctx.close();
     }
   }
 
@@ -694,3 +706,87 @@
     }
   });
 })();
+
+export function iniciar(contenedor, onTerminar) {
+  if (!document.querySelector('link[href*="agua.css"]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = new URL('../../css/agua.css', import.meta.url).href;
+    document.head.appendChild(link);
+  }
+
+  contenedor.innerHTML = `
+    <div class="cockpit-shell" aria-label="Consola del sistema de agua">
+      <header class="cockpit-topbar">
+        <div class="topbar-brand">
+          <span class="material-icon" style="color:#29b6f6;" aria-hidden="true">water_drop</span>
+          <h1 class="brand-title">CIRCUITO DE AGUA</h1>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="artemis-btn artemis-btn--slate" id="btn-sonido">
+            <span class="material-icon" aria-hidden="true">volume_up</span><span class="btn-label">Audio</span>
+          </button>
+          <button type="button" class="artemis-btn artemis-btn--agua" id="btn-nuevo-circuito">
+            <span class="material-icon" aria-hidden="true">refresh</span><span>Nuevo Circuito</span>
+          </button>
+          <button type="button" class="artemis-btn artemis-btn--comida" id="btn-verificar">
+            <span class="material-icon" aria-hidden="true">check_circle</span><span>Verificar</span>
+          </button>
+        </div>
+      </header>
+      <div class="cockpit-main">
+        <section class="monitor-bezel" id="monitor-bezel">
+          <div class="monitor-screen">
+            <div class="monitor-header">
+              <h2 class="monitor-title">RECICLAJE HÍDRICO (ECLSS)</h2>
+              <p class="monitor-status" id="monitor-status" role="status" aria-live="polite">
+                Gira las válvulas para conectar el Tanque con el Filtro de Carbón.
+              </p>
+            </div>
+            <div class="board-stage">
+              <div class="node-terminal node-start">
+                <div class="node-badge"><span class="material-icon" aria-hidden="true">water_damage</span></div>
+                <span class="node-label">TANQUE SUDOR</span><span class="node-coord">NODO (0,0)</span>
+              </div>
+              <div class="pipe-grid" id="pipe-grid" role="grid" aria-label="Tablero de tuberías 5 por 5"></div>
+              <div class="node-terminal node-end">
+                <div class="node-badge"><span class="material-icon" aria-hidden="true">filter_alt</span></div>
+                <span class="node-label">FILTRO CARBÓN</span><span class="node-coord">META (4,4)</span>
+              </div>
+              <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+            </div>
+          </div>
+        </section>
+        <aside class="side-gauge-panel" aria-label="Medidor de contaminación">
+          <div class="gauge-readout-box is-safe" id="gauge-val">0%</div>
+          <div class="gauge-segments" id="gauge-segments" aria-hidden="true"></div>
+          <div class="gauge-footer"><span class="material-icon" aria-hidden="true">warning</span>
+            <span class="gauge-title">RIESGO<br>TOXINAS</span></div>
+        </aside>
+      </div>
+      <section class="cockpit-bottom-deck" aria-label="Telemetría del grafo">
+        <div class="module-card">
+          <div class="module-header mod-agua"><span>💧 FLUJO BFS</span><span id="readout-nodes">0/25 NODOS</span></div>
+          <div class="module-visor visor-agua"><span class="visor-val" id="readout-flow">0%</span><span class="visor-sub">ALCANCE</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">GRAFO ACTIVO</span></div>
+        </div>
+        <div class="module-card">
+          <div class="module-header mod-comida"><span>🧪 PUREZA CARBÓN</span><span>META 98%</span></div>
+          <div class="module-visor visor-comida"><span class="visor-val" id="readout-filter">EN ESPERA</span><span class="visor-sub">ESTADO</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">CONECTADO</span></div>
+        </div>
+        <div class="module-card">
+          <div class="module-header mod-radiacion"><span>⚙️ VÁLVULAS</span><span>5×5 GRID</span></div>
+          <div class="module-visor visor-radiacion"><span class="visor-val" id="readout-moves">0</span><span class="visor-sub">GIROS 90°</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">OPERATIVO</span></div>
+        </div>
+      </section>
+    </div>`;
+
+  const juego = new window.MinijuegoAgua({
+    size: 5,
+    root: contenedor,
+    onTerminar
+  });
+  return () => juego.destruir();
+}
