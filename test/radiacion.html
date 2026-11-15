@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Base Lunar Artemis - Radiación (P5)</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/radiacion.css">
+  <style>
+    body {
+      background-color: #11151e;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="juego" style="width: 100%; max-width: 1024px;"></div>
+
+  <script type="module">
+    import { iniciar } from "../js/minijuegos/radiacion.js";
+
+    const contenedor = document.getElementById("juego");
+
+    function lanzarPrueba() {
+      iniciar(contenedor, (resultado) => {
+        console.log("Contrato onTerminar recibido:", resultado);
+        setTimeout(() => {
+          if (confirm(`¡Minijuego de radiación terminado! (exito: ${resultado.exito})\n¿Probar otra partida?`)) {
+            lanzarPrueba();
+          }
+        }, 300);
+      });
+    }
+
+    lanzarPrueba();
+  </script>
+</body>
+</html>
