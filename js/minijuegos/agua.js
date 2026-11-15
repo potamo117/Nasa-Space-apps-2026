@@ -1,5 +1,6 @@
 import "../ui/iconos.js";
 import { nivelDe } from '../core/dificultad.js';
+import { t } from '../core/i18n.js';
 /**
  * Minijuego P3 - Agua (Circuito ECLSS - Base Lunar Artemis)
  * Ruta en el proyecto: js/minijuegos/agua.js
@@ -201,7 +202,7 @@ import { nivelDe } from '../core/dificultad.js';
           const icon = this.btnSonido.querySelector('.material-icon');
           const label = this.btnSonido.querySelector('.btn-label');
           if (icon) icon.textContent = muted ? '🔇' : '🔊';
-          if (label) label.textContent = muted ? 'Sin Audio' : 'Audio';
+          if (label) label.textContent = muted ? t('Sin Audio') : t('Audio');
         });
       }
     }
@@ -280,7 +281,7 @@ import { nivelDe } from '../core/dificultad.js';
       this.renderizarTablero();
       this.actualizarMensajeMonitor(
         'normal',
-        'Gira las válvulas para conectar el Tanque de Condensación con el Filtro de Carbón.'
+        t('Gira las válvulas para conectar el Tanque de Condensación con el Filtro de Carbón.')
       );
       this.iniciarTemporizadorContaminacion();
     }
@@ -447,8 +448,8 @@ import { nivelDe } from '../core/dificultad.js';
         this.actualizarMensajeMonitor(
           'warning',
           this.nodosAlcanzados.size === 0
-            ? '¡SIN FLUJO DE ENTRADA! Conecta la válvula izquierda en (0,0).'
-            : `FLUJO INTERRUMPIDO (${this.nodosAlcanzados.size} nodos conectados). Sigue girando piezas.`
+            ? t('¡SIN FLUJO DE ENTRADA! Conecta la válvula izquierda en (0,0).')
+            : t('FLUJO INTERRUMPIDO ({n} nodos conectados). Sigue girando piezas.', { n: this.nodosAlcanzados.size })
         );
       }
     }
@@ -461,7 +462,7 @@ import { nivelDe } from '../core/dificultad.js';
       this.lanzarConfeti();
       this.actualizarMensajeMonitor(
         'success',
-        '¡SISTEMA ESTABLE! Circuito ECLSS conectado y agua purificada al 98%.'
+        t('¡SISTEMA ESTABLE! Circuito ECLSS conectado y agua purificada al 98%.')
       );
 
       this.onTerminar({
@@ -484,7 +485,7 @@ import { nivelDe } from '../core/dificultad.js';
           this.sonido.playAlerta();
           this.actualizarMensajeMonitor(
             'warning',
-            '¡SISTEMA CONTAMINADO AL 100%! Pulsa "Nuevo Circuito" para purgar tuberías.'
+            t('¡SISTEMA CONTAMINADO AL 100%! Pulsa "Nuevo Circuito" para purgar tuberías.')
           );
           this.onTerminar({ exito: false, motivo: 'contaminacion' });
         }
@@ -504,7 +505,7 @@ import { nivelDe } from '../core/dificultad.js';
           btn.className = 'pipe-cell';
           btn.dataset.r = r;
           btn.dataset.c = c;
-          btn.setAttribute('aria-label', `Tubería fila ${r + 1}, columna ${c + 1}`);
+          btn.setAttribute('aria-label', t('Tubería fila {f}, columna {c}', { f: r + 1, c: c + 1 }));
 
           if (r === 0 && c === 0) btn.classList.add('is-start');
           if (r === this.size - 1 && c === this.size - 1) btn.classList.add('is-end');
@@ -576,11 +577,11 @@ import { nivelDe } from '../core/dificultad.js';
         : Math.min(95, Math.round((this.nodosAlcanzados.size / (this.size * 2 - 1)) * 100));
 
       if (this.readoutFlowEl) this.readoutFlowEl.textContent = `${pctFlujo}%`;
-      if (this.readoutNodesEl) this.readoutNodesEl.textContent = `${this.nodosAlcanzados.size}/${total} NODOS`;
+      if (this.readoutNodesEl) this.readoutNodesEl.textContent = t('{n}/{total} NODOS', { n: this.nodosAlcanzados.size, total });
       if (this.readoutFilterEl) {
         this.readoutFilterEl.textContent = this.completado
-          ? '98% PURA'
-          : (this.rutaSolucion.size > 0 ? 'LISTO' : 'EN ESPERA');
+          ? t('98% PURA')
+          : (this.rutaSolucion.size > 0 ? t('LISTO') : t('EN ESPERA'));
       }
       if (this.readoutMovesEl) this.readoutMovesEl.textContent = `${this.movimientos}`;
 
@@ -725,21 +726,21 @@ export function iniciar(contenedor, onTerminar) {
   }
 
   contenedor.innerHTML = `
-    <div class="cockpit-shell" aria-label="Consola del sistema de agua">
+    <div class="cockpit-shell" aria-label="${t('Consola del sistema de agua')}">
       <header class="cockpit-topbar">
         <div class="topbar-brand">
           <span class="material-icon" style="color:#29b6f6;" aria-hidden="true">💧</span>
-          <h1 class="brand-title">CIRCUITO DE AGUA</h1>
+          <h1 class="brand-title">${t('CIRCUITO DE AGUA')}</h1>
         </div>
         <div class="topbar-actions">
           <button type="button" class="artemis-btn artemis-btn--slate" id="btn-sonido">
-            <span class="material-icon" aria-hidden="true">🔊</span><span class="btn-label">Audio</span>
+            <span class="material-icon" aria-hidden="true">🔊</span><span class="btn-label">${t('Audio')}</span>
           </button>
           <button type="button" class="artemis-btn artemis-btn--agua" id="btn-nuevo-circuito">
-            <span class="material-icon" aria-hidden="true">🔄</span><span>Nuevo Circuito</span>
+            <span class="material-icon" aria-hidden="true">🔄</span><span>${t('Nuevo Circuito')}</span>
           </button>
           <button type="button" class="artemis-btn artemis-btn--comida" id="btn-verificar">
-            <span class="material-icon" aria-hidden="true">✅</span><span>Verificar</span>
+            <span class="material-icon" aria-hidden="true">✅</span><span>${t('Verificar')}</span>
           </button>
         </div>
       </header>
@@ -747,47 +748,47 @@ export function iniciar(contenedor, onTerminar) {
         <section class="monitor-bezel" id="monitor-bezel">
           <div class="monitor-screen">
             <div class="monitor-header">
-              <h2 class="monitor-title">RECICLAJE HÍDRICO (ECLSS)</h2>
+              <h2 class="monitor-title">${t('RECICLAJE HÍDRICO (ECLSS)')}</h2>
               <p class="monitor-status" id="monitor-status" role="status" aria-live="polite">
-                Gira las válvulas para conectar el Tanque con el Filtro de Carbón.
+                ${t('Gira las válvulas para conectar el Tanque con el Filtro de Carbón.')}
               </p>
             </div>
             <div class="board-stage">
               <div class="node-terminal node-start">
                 <div class="node-badge"><span class="material-icon" aria-hidden="true">🚰</span></div>
-                <span class="node-label">TANQUE SUDOR</span><span class="node-coord">NODO (0,0)</span>
+                <span class="node-label">${t('TANQUE SUDOR')}</span><span class="node-coord">${t('NODO (0,0)')}</span>
               </div>
-              <div class="pipe-grid" id="pipe-grid" role="grid" aria-label="Tablero de tuberías 5 por 5"></div>
+              <div class="pipe-grid" id="pipe-grid" role="grid" aria-label="${t('Tablero de tuberías 5 por 5')}"></div>
               <div class="node-terminal node-end">
                 <div class="node-badge"><span class="material-icon" aria-hidden="true">🧪</span></div>
-                <span class="node-label">FILTRO CARBÓN</span><span class="node-coord">META (4,4)</span>
+                <span class="node-label">${t('FILTRO CARBÓN')}</span><span class="node-coord">${t('META (4,4)')}</span>
               </div>
               <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
             </div>
           </div>
         </section>
-        <aside class="side-gauge-panel" aria-label="Medidor de contaminación">
+        <aside class="side-gauge-panel" aria-label="${t('Medidor de contaminación')}">
           <div class="gauge-readout-box is-safe" id="gauge-val">0%</div>
           <div class="gauge-segments" id="gauge-segments" aria-hidden="true"></div>
           <div class="gauge-footer"><span class="material-icon" aria-hidden="true">⚠️</span>
-            <span class="gauge-title">RIESGO<br>TOXINAS</span></div>
+            <span class="gauge-title">${t('RIESGO')}<br>${t('TOXINAS')}</span></div>
         </aside>
       </div>
-      <section class="cockpit-bottom-deck" aria-label="Telemetría del grafo">
+      <section class="cockpit-bottom-deck" aria-label="${t('Telemetría del grafo')}">
         <div class="module-card">
-          <div class="module-header mod-agua"><span>💧 FLUJO BFS</span><span id="readout-nodes">0/25 NODOS</span></div>
-          <div class="module-visor visor-agua"><span class="visor-val" id="readout-flow">0%</span><span class="visor-sub">ALCANCE</span></div>
-          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">GRAFO ACTIVO</span></div>
+          <div class="module-header mod-agua"><span>💧 ${t('FLUJO BFS')}</span><span id="readout-nodes">${t('{n}/{total} NODOS', { n: 0, total: 25 })}</span></div>
+          <div class="module-visor visor-agua"><span class="visor-val" id="readout-flow">0%</span><span class="visor-sub">${t('ALCANCE')}</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">${t('GRAFO ACTIVO')}</span></div>
         </div>
         <div class="module-card">
-          <div class="module-header mod-comida"><span>🧪 PUREZA CARBÓN</span><span>META 98%</span></div>
-          <div class="module-visor visor-comida"><span class="visor-val" id="readout-filter">EN ESPERA</span><span class="visor-sub">ESTADO</span></div>
-          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">CONECTADO</span></div>
+          <div class="module-header mod-comida"><span>🧪 ${t('PUREZA CARBÓN')}</span><span>${t('META 98%')}</span></div>
+          <div class="module-visor visor-comida"><span class="visor-val" id="readout-filter">${t('EN ESPERA')}</span><span class="visor-sub">${t('ESTADO')}</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">${t('CONECTADO')}</span></div>
         </div>
         <div class="module-card">
-          <div class="module-header mod-radiacion"><span>⚙️ VÁLVULAS</span><span>5×5 GRID</span></div>
-          <div class="module-visor visor-radiacion"><span class="visor-val" id="readout-moves">0</span><span class="visor-sub">GIROS 90°</span></div>
-          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">OPERATIVO</span></div>
+          <div class="module-header mod-radiacion"><span>⚙️ ${t('VÁLVULAS')}</span><span>${t('5×5 GRID')}</span></div>
+          <div class="module-visor visor-radiacion"><span class="visor-val" id="readout-moves">0</span><span class="visor-sub">${t('GIROS 90°')}</span></div>
+          <div class="led-indicator-box"><span class="square-led" aria-hidden="true"></span><span class="led-text">${t('OPERATIVO')}</span></div>
         </div>
       </section>
     </div>`;

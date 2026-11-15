@@ -1,4 +1,5 @@
 import "./ui/iconos.js";
+import { t, selectorIdiomaHTML, enlazarSelectorIdioma } from "./core/i18n.js";
 import { estado, reiniciarEstado } from "./core/estado.js";
 import { emitir, escuchar } from "./core/bus.js";
 import { crearLista, pausarProrroga, reanudarProrroga } from "./core/listaEnlazada.js";
@@ -64,7 +65,7 @@ export function dispararEvento(evento, { bonus = false } = {}) {
     inicioFallo[s] = ahoraJuego();
     if (bonus && !estado.bonusReparacion.includes(s)) estado.bonusReparacion.push(s);
   });
-  activos.push({ evento, pendientes: [...nuevos], extra: evento.donki ? textoDonki() : "" });
+  activos.push({ evento, pendientes: [...nuevos], extra: evento.donki ? textoDonki : "" });
   nuevos.forEach(activarFallo);
   progreso.registrarFallos(estado.fallos.length);
   monitor.setEventos(activos);
@@ -95,7 +96,7 @@ function lanzar(evento) {
       estado.electricidad -= COSTO_PARCHE;
       emitir("parche", { evento });
       progreso.registrarParche();
-      mostrarToast("🩹 Parche aplicado: falla evitada");
+      mostrarToast(t("🩹 Parche aplicado: falla evitada"));
       refrescar();
     } else {
       dispararEvento(evento, { bonus: op === "completa" });
@@ -210,7 +211,7 @@ function entrarResumen(dia) {
     (id) => {
       if (id) {
         progreso.aplicarMejora(id);
-        mostrarToast("✅ Mejora instalada");
+        mostrarToast(t("✅ Mejora instalada"));
       }
       enResumen = false;
       if (!partidaActiva) return;
@@ -235,7 +236,7 @@ function onProrrogaInicio(d) {
 
 function onApagon() {
   progreso.registrarApagon();
-  mostrarToast("🔌 ¡APAGÓN! Todos los interruptores se apagaron");
+  mostrarToast(t("🔌 ¡APAGÓN! Todos los interruptores se apagaron"));
 }
 
 // ---------- Pausa y fin ----------
@@ -293,6 +294,21 @@ function terminarPartida(victoria, motivo = "") {
   const resumen = progreso.resumenFinal(victoria);
   mostrarPantallaFin(victoria, () => iniciarJuego(), motivo, resumen, volverAlMenu);
 }
+
+// ---------- Idioma ----------
+// Selector ES | EN de la cabina. Al cambiar el idioma se repinta lo dinámico (el HTML estático lo traduce i18n.js).
+function montarSelectorCabina() {
+  const cont = document.getElementById("selector-idioma-cabina");
+  if (!cont) return;
+  cont.innerHTML = selectorIdiomaHTML();
+  enlazarSelectorIdioma(cont);
+}
+window.addEventListener("idioma-cambio", () => {
+  montarSelectorCabina();
+  monitor.renderizar();
+  refrescar();
+});
+montarSelectorCabina();
 
 // ---------- Arranque ----------
 // Conecta una sola vez los interruptores, los botones y los listeners globales.
@@ -355,7 +371,7 @@ export function iniciarJuego({ segundosPorHora, perfil: pid } = {}) {
     escuchar("prorroga-tick", onProrroga),
     escuchar("minijuego-terminado", onMinijuegoTerminado),
     escuchar("apagon", onApagon),
-    escuchar("logro", ({ icono, nombre }) => mostrarToast(`${icono} Logro: ${nombre}`)),
+    escuchar("logro", ({ icono, nombre }) => mostrarToast(`${icono} ${t("Logro: {nombre}", { nombre: t(nombre) })}`)),
     escuchar("victoria", () => terminarPartida(true)),
     escuchar("derrota", ({ motivo }) => terminarPartida(false, motivo))
   );

@@ -7,4 +7,6 @@ export const LEGAL = {
   web: "https://github.com/potamo117/Nasa-Space-apps-2026",
   pais: "México",
   actualizacion: "15 de noviembre de 2026",
+  // Versión en inglés de los datos que cambian según el idioma.
+  en: { pais: "Mexico", actualizacion: "November 15, 2026" },
 };

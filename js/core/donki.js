@@ -1,4 +1,5 @@
 // Datos reales de clima espacial (NASA DONKI) con respaldo local si falla la red.
+import { t } from "./i18n.js";
 const API = "https://api.nasa.gov/DONKI";
 const KEY = "DEMO_KEY";
 const TIMEOUT_MS = 4000;
@@ -88,6 +89,6 @@ export function eventoSolarDestacado() {
 export function textoDonki() {
   const d = eventoSolarDestacado();
   if (!d) return "";
-  const origen = d.fuente === "api" ? "NASA DONKI (datos reales)" : "NASA DONKI (datos de respaldo)";
-  return `${origen}: fulguración clase ${d.clase} del ${d.fecha}.`;
+  const origen = d.fuente === "api" ? t("NASA DONKI (datos reales)") : t("NASA DONKI (datos de respaldo)");
+  return t("{origen}: fulguración clase {clase} del {fecha}.", { origen, clase: d.clase, fecha: d.fecha });
 }

@@ -38,20 +38,31 @@ No requiere Node, React ni npm: es HTML + CSS + JavaScript puro con módulos ES.
 
 Páginas de prueba aisladas: `test/core.html` (motor del juego; usa `?rapido` para que el día dure ~28 s), `test/agua.html`, `test/comida.html`, `test/oxigeno.html`, `test/radiacion.html`.
 
+## Idiomas (Español / English)
+
+El juego está disponible en **español e inglés**. Se cambia con el selector **ES | EN** que aparece en la cabina, en la pantalla de bienvenida, en el tutorial, en la pausa, en el aviso de cookies y en las páginas legales. La elección se guarda (si se aceptan las cookies funcionales); la primera vez se usa el idioma del navegador.
+
+- `js/core/i18n.js`: función `t("texto en español", { parámetros })`. **El texto en español es la clave**; en español devuelve el mismo texto y en inglés busca la traducción.
+- `js/i18n/en.js`: diccionario ES → EN. Si agregas un texto nuevo al juego, envuélvelo con `t(...)` y añade su traducción aquí. En inglés, un texto sin traducción aparece en español y la consola avisa `[i18n] falta traducción al inglés`.
+- HTML estático: atributos `data-i18n`, `data-i18n-aria` y `data-i18n-title` (ver `index.html`). Las páginas legales tienen un bloque `<div data-lang="es">` y otro `<div data-lang="en">`.
+- Al cambiar de idioma con un minijuego abierto, este se reinicia para mostrarse completo en el nuevo idioma.
+
 ## Estructura del proyecto
 
 ```
 index.html
-css/        base, cockpit, agua, comida, oxigeno, radiacion
+css/        base, cockpit, idioma, agua, comida, oxigeno, radiacion
 js/
   main.js                 arranca y conecta todo
   core/
     bus.js                bus de eventos (window)
+    i18n.js               t(), idioma activo y selector ES | EN
     estado.js             estado de recursos, interruptores y fallos
     listaEnlazada.js      DiaNode, avance de días, prórroga, victoria/derrota
     reloj.js              reloj 06:00 a 20:00
     energia.js            consumo, degradación, fallos, apagón
     eventos.js            matriz de eventos
+  i18n/en.js              diccionario ES → EN
   ui/                     cockpit, interruptores, modal, pantallas, monitor
   minijuegos/             index.js (registro), agua, comida, oxigeno, radiacion
 data/donki-respaldo.json  respaldo si falla la API de DONKI

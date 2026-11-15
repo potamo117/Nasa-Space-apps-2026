@@ -2,11 +2,13 @@
 import { MINIJUEGOS } from "../minijuegos/index.js";
 import { emitir } from "../core/bus.js";
 import { registrarResultado } from "../core/dificultad.js";
+import { t } from "../core/i18n.js";
 
 const $ = (id) => document.getElementById(id);
 const TITULOS = { agua: "agua", comida: "comida", oxigeno: "oxígeno", radiacion: "radiación" };
 let cerrarEnlazado = false;
 let limpiarMinijuego = null;
+let sectorAbierto = null; // sector del minijuego que está en pantalla (null = modal cerrado)
 let ticketCarga = 0; // invalida cargas asíncronas de un minijuego que ya se cerró
 
 function enlazarCierre() {
@@ -17,6 +19,7 @@ function enlazarCierre() {
 
 export function cerrarModal() {
   ticketCarga++;
+  sectorAbierto = null;
   if (limpiarMinijuego) {
     limpiarMinijuego();
     limpiarMinijuego = null;
@@ -35,10 +38,11 @@ export function abrirModal(sector) {
   // Si ya había un minijuego abierto, se detiene antes de cargar otro.
   if (limpiarMinijuego) { limpiarMinijuego(); limpiarMinijuego = null; }
   const ticket = ++ticketCarga;
+  sectorAbierto = sector;
   const inicio = performance.now();
 
-  $("modal-titulo").textContent = `MÓDULO DE ${(TITULOS[sector] || sector).toUpperCase()}`;
-  cont.innerHTML = "<p>Cargando sistema...</p>";
+  $("modal-titulo").textContent = t("MÓDULO DE {sector}", { sector: t(TITULOS[sector] || sector).toUpperCase() });
+  cont.innerHTML = `<p>${t("Cargando sistema...")}</p>`;
   modal.classList.remove("hidden");
 
   // Contrato: el minijuego llama onTerminar({exito}) y aquí se avisa al core.
@@ -69,10 +73,16 @@ export function abrirModal(sector) {
 function mostrarSimulacion(sector, cont, alTerminar) {
   cont.innerHTML = `
     <div style="text-align:center;">
-      <p style="font-size:1.2rem; margin-bottom:16px;">El minijuego de <b>${sector.toUpperCase()}</b> aún no está conectado.</p>
+      <p style="font-size:1.2rem; margin-bottom:16px;">${t("El minijuego de {sector} aún no está conectado.", { sector: `<b>${t(TITULOS[sector] || sector).toUpperCase()}</b>` })}</p>
       <button id="btn-demo-win" style="padding:12px 24px; border-radius:12px; border:none; background:#00e676; font-weight:700; cursor:pointer;">
-        ✅ Simular Reparación Exitosa
+        ${t("✅ Simular Reparación Exitosa")}
       </button>
     </div>`;
   $("btn-demo-win").onclick = () => alTerminar({ exito: true });
 }
+
+// Al cambiar de idioma con un minijuego abierto se vuelve a abrir para que todo su texto cambie
+// (el minijuego se reinicia: el cambio de idioma se hace desde la pausa o el menú, no en pleno juego).
+window.addEventListener("idioma-cambio", () => {
+  if (sectorAbierto) abrirModal(sectorAbierto);
+});

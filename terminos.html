@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-titulo="Términos y condiciones · Simulador de Supervivencia Lunar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,13 +8,17 @@
   <link rel="stylesheet" href="css/fuentes.css" />
   <link rel="stylesheet" href="css/legal.css" />
   <link rel="stylesheet" href="css/cookies.css" />
+  <link rel="stylesheet" href="css/idioma.css" />
 </head>
 <body>
   <main class="legal">
     <div class="legal-top">
-      <a class="volver" href="index.html">← Volver al juego</a>
-      <a href="privacidad.html">Política de privacidad</a>
+      <a class="volver" href="index.html"><span data-i18n="← Volver al juego">← Volver al juego</span></a>
+      <a href="privacidad.html"><span data-i18n="Política de privacidad">Política de privacidad</span></a>
     </div>
+    <div class="legal-idioma" id="selector-idioma-legal"></div>
+
+    <div data-lang="es">
 
     <h1>Términos y condiciones de uso</h1>
     <p class="fecha">Última actualización: <span data-legal="actualizacion"></span></p>
@@ -72,8 +76,70 @@
 
     <div class="legal-pie">
       <a href="privacidad.html">Política de privacidad y cookies</a>
-      <button type="button" class="btn-cookies" id="btn-cookies">🍪 Preferencias de cookies</button>
+      <button type="button" class="btn-cookies" >🍪 Preferencias de cookies</button>
       <a href="index.html">Volver al juego</a>
+    </div>
+    </div>
+    <div data-lang="en">
+    <h1>Terms and conditions of use</h1>
+    <p class="fecha">Last updated: <span data-legal="actualizacion"></span></p>
+
+    <section class="resumen-ninos">
+      <h2>📣 In plain words (for kids)</h2>
+      <ul>
+        <li>This is a game to learn and have fun with space science.</li>
+        <li>Ask a grown-up for permission before you play and before you accept cookies.</li>
+        <li>Play respectfully and take breaks from screens once in a while.</li>
+        <li>This game is <b>not from NASA</b>: we use public data that they share.</li>
+      </ul>
+    </section>
+
+    <h2>1. Acceptance</h2>
+    <p>By using <span data-legal="proyecto"></span> (“the game”) you accept these terms. If you are a minor, your mother, father or guardian must read them and authorize your use. If you do not agree, please do not use the game.</p>
+
+    <h2>2. What the game is</h2>
+    <p>It is an educational and recreational project, created by <b data-legal="responsable"></b> for the NASA Space Apps Challenge 2026. It simulates, in a simplified way, the management of a lunar base (power, water, food, oxygen and radiation) through minigames.</p>
+
+    <h2>3. No relationship with NASA</h2>
+    <p>This project is <b>not affiliated with, sponsored by or endorsed by NASA</b> or any other space agency. It uses public data from NASA's open APIs (DONKI). The name “NASA” and its logos belong to their owners and are mentioned only to identify the challenge and the source of the data.</p>
+
+    <h2>4. Permitted use</h2>
+    <ul>
+      <li>You may play for free, for personal, educational and non-commercial use.</li>
+      <li>Do not try to damage, mass-copy, abusively reverse engineer, or interfere with the operation of the game or the services it uses.</li>
+      <li>Do not use the game for illegal purposes or to harass or harm other people.</li>
+    </ul>
+
+    <h2>5. Minors and supervision</h2>
+    <p>The game is designed for people aged 7 to 12 with adult supervision. We recommend playing in short sessions, with breaks, and in a well-lit place. The game includes light, sound and vibration effects (on mobile phones) that can be muted. It is not suitable for people sensitive to flashing lights without supervision.</p>
+
+    <h2>6. Scientific content</h2>
+    <p>The scientific information and events in the game are <b>simplified for educational purposes</b> and do not accurately represent a real mission. Space weather data may be real (if the connection to NASA works) or sample backup data. Do not use the game as a source for scientific, technical or safety decisions.</p>
+
+    <h2>7. Intellectual property</h2>
+    <p>The code, designs, texts, illustrations and sounds of the game belong to their authors, unless another license is indicated in the project repository (<a href="https://github.com/potamo117/Nasa-Space-apps-2026" target="_blank" rel="noopener">GitHub</a>). The typefaces are from Google Fonts and are distributed under their own open licenses. NASA data is for public use under its conditions.</p>
+    <p>The icons (Microsoft Fluent Emoji, MIT license) and the typefaces (Fredoka, Orbitron and Chakra Petch, SIL Open Font License 1.1) are freely usable third-party resources; their credits and licenses are in the project's <code>recursos/</code> folder.</p>
+
+    <h2>8. Privacy and cookies</h2>
+    <p>The handling of information is described in the <a href="privacidad.html">Privacy and cookies policy</a>, which is part of these terms.</p>
+
+    <h2>9. Availability and warranties</h2>
+    <p>The game is provided “as is” and “as available”, with no guarantee of continuous or error-free operation. There may be failures, changes or interruptions, including a lack of connection to third-party services.</p>
+
+    <h2>10. Limitation of liability</h2>
+    <p>To the extent permitted by law, the authors will not be liable for indirect damages or losses arising from the use of the game or the inability to use it, including the loss of scores or achievements saved on the device. Nothing herein limits the rights that the law grants to consumers or any liability that cannot be legally excluded.</p>
+
+    <h2>11. Changes</h2>
+    <p>We may modify these terms or the game. The “Last updated” date indicates the current version. Continuing to use the game after a change means you accept the new terms.</p>
+
+    <h2>12. Governing law and contact</h2>
+    <p>These terms are governed by the laws applicable in <span data-legal="pais"></span>. For questions, comments or requests: <span data-legal="contacto"></span>.</p>
+
+    <div class="legal-pie">
+      <a href="privacidad.html">Privacy and cookies policy</a>
+      <button type="button" class="btn-cookies">🍪 Cookie preferences</button>
+      <a href="index.html">Back to the game</a>
+    </div>
     </div>
   </main>
   <script type="module" src="js/legal-pagina.js"></script>

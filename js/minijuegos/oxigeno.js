@@ -1,5 +1,6 @@
 import "../ui/iconos.js";
 import { nivelDe } from "../core/dificultad.js";
+import { t } from "../core/i18n.js";
 // js/minijuegos/oxigeno.js  (P4) — Fábrica de Oxígeno (electrólisis del agua)
 //
 // Contrato:  iniciar(contenedor, onTerminar)
@@ -83,7 +84,7 @@ export function iniciar(contenedor, onTerminar) {
             <div>
               <div class="ox-title-row">
                 <h2 class="ox-font-orbitron ox-main-title">
-                  BASE LUNAR ARTEMIS · FÁBRICA DE OXÍGENO (O₂)
+                  ${t("BASE LUNAR ARTEMIS · FÁBRICA DE OXÍGENO (O₂)")}
                 </h2>
                 <div class="ox-leds">
                   <span class="ox-led ox-led-green"></span>
@@ -91,13 +92,13 @@ export function iniciar(contenedor, onTerminar) {
                   <span class="ox-led ox-led-amber"></span>
                 </div>
               </div>
-              <span class="ox-badge-module">🫧 MÓDULO DE SOPORTE VITAL O₂</span>
+              <span class="ox-badge-module">🫧 ${t("MÓDULO DE SOPORTE VITAL O₂")}</span>
             </div>
           </div>
 
           <button type="button" data-el="btnAudio" class="ox-juicy-btn ox-btn-audio">
             <span data-el="audioIcon">🔊</span>
-            <span>Sonido</span>
+            <span>${t("Sonido")}</span>
           </button>
         </header>
 
@@ -117,14 +118,14 @@ export function iniciar(contenedor, onTerminar) {
             </div>
             <div>
               <div class="ox-font-orbitron ox-arty-tag">
-                🤖 MENSAJE DE ARTY · ELECTRÓLISIS DEL AGUA (H₂O → O₂)
+                🤖 ${t("MENSAJE DE ARTY · ELECTRÓLISIS DEL AGUA (H₂O → O₂)")}
               </div>
               <p data-el="artyText" class="ox-arty-msg"></p>
             </div>
           </div>
 
           <div data-el="statusPill" class="ox-font-orbitron ox-status-pill">
-            ⚡ AJUSTA LA ENERGÍA
+            ${t("⚡ AJUSTA LA ENERGÍA")}
           </div>
         </section>
 
@@ -134,22 +135,22 @@ export function iniciar(contenedor, onTerminar) {
           <div class="ox-col-left">
             <div class="ox-meters-grid">
               <div class="ox-crt-screen ox-meter-box">
-                <div class="ox-font-orbitron ox-meter-label" style="color:#fcd34d;">🎯 VOLTAJE META</div>
+                <div class="ox-font-orbitron ox-meter-label" style="color:#fcd34d;">🎯 ${t("VOLTAJE META")}</div>
                 <div data-el="targetVoltDisplay" class="ox-font-orbitron ox-meter-val ox-glow-amber">
                   ${metaInicial} V
                 </div>
                 <div class="ox-meter-sub" style="color:#6ee7b7;">
-                  Zona verde: ${metaInicial - 1} V – ${metaInicial + 1} V
+                  ${t("Zona verde: {a} V – {b} V", { a: metaInicial - 1, b: metaInicial + 1 })}
                 </div>
               </div>
 
               <div data-el="currentVoltCard" class="ox-crt-screen ox-meter-box is-cyan">
-                <div class="ox-font-orbitron ox-meter-label" style="color:#67e8f9;">⚡ TU ENERGÍA</div>
+                <div class="ox-font-orbitron ox-meter-label" style="color:#67e8f9;">⚡ ${t("TU ENERGÍA")}</div>
                 <div data-el="currentVoltDisplay" class="ox-font-orbitron ox-meter-val ox-glow-cyan">
                   ${CFG.VOLT_BASE} V
                 </div>
                 <div data-el="voltHelperBadge" class="ox-meter-sub" style="color:#fcd34d;">
-                  ¡Ajusta el voltaje!
+                  ${t("¡Ajusta el voltaje!")}
                 </div>
               </div>
             </div>
@@ -157,9 +158,9 @@ export function iniciar(contenedor, onTerminar) {
             <!-- TANQUE DE ELECTRÓLISIS -->
             <div class="ox-crt-screen ox-tank-box">
               <div class="ox-font-chakra ox-tank-header">
-                <span style="color:#67e8f9;">🔵 LADO O₂ (OXÍGENO PURO)</span>
-                <span class="ox-tap-hint">👆 ¡TOCA LAS BURBUJAS PARA EXPLOTARLAS!</span>
-                <span style="color:#d8b4fe;">🟣 LADO H₂ (HIDRÓGENO)</span>
+                <span style="color:#67e8f9;">🔵 ${t("LADO O₂ (OXÍGENO PURO)")}</span>
+                <span class="ox-tap-hint">👆 ${t("¡TOCA LAS BURBUJAS PARA EXPLOTARLAS!")}</span>
+                <span style="color:#d8b4fe;">🟣 ${t("LADO H₂ (HIDRÓGENO)")}</span>
               </div>
 
               <div data-el="tankStage" class="ox-tank-stage">
@@ -167,8 +168,8 @@ export function iniciar(contenedor, onTerminar) {
               </div>
 
               <div class="ox-tank-legend">
-                <span class="ox-legend-item"><span class="ox-dot-cyan"></span> Burbuja O₂ (+${CFG.GANANCIA_BURBUJA}%)</span>
-                <span class="ox-legend-item"><span class="ox-dot-gold"></span> <strong>Burbuja Dorada O₂ (+${CFG.GANANCIA_DORADA}%)</strong></span>
+                <span class="ox-legend-item"><span class="ox-dot-cyan"></span> ${t("Burbuja O₂ (+{n}%)", { n: CFG.GANANCIA_BURBUJA })}</span>
+                <span class="ox-legend-item"><span class="ox-dot-gold"></span> <strong>${t("Burbuja Dorada O₂ (+{n}%)", { n: CFG.GANANCIA_DORADA })}</strong></span>
               </div>
             </div>
           </div>
@@ -178,25 +179,25 @@ export function iniciar(contenedor, onTerminar) {
             <!-- CRISTALES -->
             <div>
               <span class="ox-font-orbitron ox-section-label">
-                1️⃣ CRISTALES DE ENERGÍA (Base: ${CFG.VOLT_BASE} V)
+                1️⃣ ${t("CRISTALES DE ENERGÍA (Base: {n} V)", { n: CFG.VOLT_BASE })}
               </span>
               <div class="ox-crystals-grid">
                 <button type="button" data-crystal="0" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">💎</span>
                   <span class="ox-font-orbitron ox-crystal-volt" style="color:#67e8f9;">+${C1} V</span>
-                  <span class="ox-crystal-state">APAGADO</span>
+                  <span class="ox-crystal-state">${t("APAGADO")}</span>
                 </button>
 
                 <button type="button" data-crystal="1" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">🔋</span>
                   <span class="ox-font-orbitron ox-crystal-volt" style="color:#6ee7b7;">+${C2} V</span>
-                  <span class="ox-crystal-state">APAGADO</span>
+                  <span class="ox-crystal-state">${t("APAGADO")}</span>
                 </button>
 
                 <button type="button" data-crystal="2" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">⚡</span>
                   <span class="ox-font-orbitron ox-crystal-volt" style="color:#fcd34d;">+${C3} V</span>
-                  <span class="ox-crystal-state">APAGADO</span>
+                  <span class="ox-crystal-state">${t("APAGADO")}</span>
                 </button>
               </div>
             </div>
@@ -205,16 +206,16 @@ export function iniciar(contenedor, onTerminar) {
             <div class="ox-dark-card">
               <div class="ox-slider-top">
                 <span class="ox-font-orbitron" style="font-size:0.72rem;font-weight:700;color:#fcd34d;">
-                  🧲 O DESLIZA LA PALANCA MAGNÉTICA
+                  🧲 ${t("O DESLIZA LA PALANCA MAGNÉTICA")}
                 </span>
                 <span data-el="sliderVoltBadge" class="ox-font-orbitron ox-slider-badge">${CFG.VOLT_BASE} V</span>
               </div>
 
-              <input data-el="voltageSlider" type="range" min="${CFG.VOLT_BASE}" max="${CFG.VOLT_MAX}" value="${CFG.VOLT_BASE}" step="1" class="ox-kid-slider" aria-label="Voltaje de la celda" />
+              <input data-el="voltageSlider" type="range" min="${CFG.VOLT_BASE}" max="${CFG.VOLT_MAX}" value="${CFG.VOLT_BASE}" step="1" class="ox-kid-slider" aria-label="${t("Voltaje de la celda")}" />
 
               <div class="ox-font-orbitron ox-slider-scale">
                 <span>${CFG.VOLT_BASE} V</span>
-                <span style="color:#34d399;">🎯 META ±1 V ES ZONA VERDE</span>
+                <span style="color:#34d399;">🎯 ${t("META ±1 V ES ZONA VERDE")}</span>
                 <span>${CFG.VOLT_MAX} V</span>
               </div>
             </div>
@@ -223,12 +224,12 @@ export function iniciar(contenedor, onTerminar) {
             <div class="ox-dark-card">
               <div class="ox-temp-row">
                 <div>
-                  <div class="ox-font-orbitron ox-temp-title">🌡️ TEMPERATURA DEL REACTOR</div>
-                  <div data-el="tempFriendlyText" class="ox-temp-text">❄️ Fresquita y segura</div>
+                  <div class="ox-font-orbitron ox-temp-title">🌡️ ${t("TEMPERATURA DEL REACTOR")}</div>
+                  <div data-el="tempFriendlyText" class="ox-temp-text">❄️ ${t("Fresquita y segura")}</div>
                 </div>
 
                 <button type="button" data-el="btnCool" class="ox-juicy-btn ox-font-orbitron ox-btn-cool">
-                  <span>💦</span> <span data-el="coolLabel">ENFRIAR</span>
+                  <span>💦</span> <span data-el="coolLabel">${t("ENFRIAR")}</span>
                 </button>
               </div>
               <div class="ox-heat-track"><div data-el="heatBar" class="ox-heat-fill"></div></div>
@@ -237,7 +238,7 @@ export function iniciar(contenedor, onTerminar) {
             <!-- TANQUE DE OXÍGENO -->
             <div class="ox-crt-screen ox-progress-box">
               <div class="ox-font-orbitron ox-progress-top">
-                <span style="font-size:0.8rem;color:#67e8f9;">🫧 TANQUE DE OXÍGENO O₂</span>
+                <span style="font-size:0.8rem;color:#67e8f9;">🫧 ${t("TANQUE DE OXÍGENO O₂")}</span>
                 <span data-el="oxygenPercentText" class="ox-glow-green" style="font-size:1.3rem;">0%</span>
               </div>
 
@@ -246,7 +247,7 @@ export function iniciar(contenedor, onTerminar) {
               </div>
 
               <p style="margin:0;font-size:0.74rem;text-align:center;font-weight:700;color:#fcd34d;">
-                ✨ ¡Llena el tanque al 100% para restaurar el oxígeno de la base!
+                ✨ ${t("¡Llena el tanque al 100% para restaurar el oxígeno de la base!")}
               </p>
             </div>
           </div>
@@ -257,10 +258,10 @@ export function iniciar(contenedor, onTerminar) {
           <div class="ox-chassis-panel ox-victory-card">
             <div style="font-size:3.5rem;">🫧</div>
             <h3 class="ox-font-orbitron ox-glow-green" style="margin:0;font-size:1.5rem;font-weight:900;">
-              ¡OXÍGENO RESTAURADO AL 100%!
+              ${t("¡OXÍGENO RESTAURADO AL 100%!")}
             </h3>
             <p style="margin:0;font-size:0.92rem;color:#e2e8f0;line-height:1.45;">
-              ¡Excelente trabajo! Regulaste la celda de electrólisis a <strong>${metaInicial} V</strong> y llenaste todo el tanque de oxígeno puro para la Base Lunar Artemis.
+              ${t("¡Excelente trabajo! Regulaste la celda de electrólisis a <strong>{n} V</strong> y llenaste todo el tanque de oxígeno puro para la Base Lunar Artemis.", { n: metaInicial })}
             </p>
           </div>
         </div>
@@ -270,10 +271,10 @@ export function iniciar(contenedor, onTerminar) {
           <div class="ox-chassis-panel ox-victory-card is-defeat">
             <div style="font-size:3.5rem;">🔥</div>
             <h3 class="ox-font-orbitron ox-glow-rose" style="margin:0;font-size:1.5rem;font-weight:900;">
-              ¡REACTOR SOBRECALENTADO!
+              ${t("¡REACTOR SOBRECALENTADO!")}
             </h3>
             <p style="margin:0;font-size:0.92rem;color:#e2e8f0;line-height:1.45;">
-              Demasiado voltaje durante demasiado tiempo: la celda de electrólisis se apagó por seguridad. La producción de oxígeno sigue detenida.
+              ${t("Demasiado voltaje durante demasiado tiempo: la celda de electrólisis se apagó por seguridad. La producción de oxígeno sigue detenida.")}
             </p>
           </div>
         </div>
@@ -428,7 +429,7 @@ export function iniciar(contenedor, onTerminar) {
     const lbl = btn.querySelector(".ox-crystal-state");
     const active = game.crystals[index];
     btn.classList.toggle("is-active", active);
-    if (lbl) lbl.textContent = active ? "ENCENDIDO" : "APAGADO";
+    if (lbl) lbl.textContent = active ? t("ENCENDIDO") : t("APAGADO");
   }
 
   // ÚNICA fuente de verdad del voltaje: los cristales. El slider y el display
@@ -475,17 +476,17 @@ export function iniciar(contenedor, onTerminar) {
     if (game.zona === "verde") {
       el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-green";
       el.voltCard.classList.add("is-green");
-      el.helperBadge.textContent = "✅ ¡ZONA VERDE PERFECTA!";
+      el.helperBadge.textContent = t("✅ ¡ZONA VERDE PERFECTA!");
       el.helperBadge.style.color = "#6ee7b7";
     } else if (game.zona === "bajo") {
       el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-cyan";
       el.voltCard.classList.add("is-cyan");
-      el.helperBadge.textContent = "⬆️ ¡Falta energía! Sube más";
+      el.helperBadge.textContent = t("⬆️ ¡Falta energía! Sube más");
       el.helperBadge.style.color = "#fcd34d";
     } else {
       el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-rose";
       el.voltCard.classList.add("is-hot");
-      el.helperBadge.textContent = "⬇️ ¡Mucha energía! Baja un poco";
+      el.helperBadge.textContent = t("⬇️ ¡Mucha energía! Baja un poco");
       el.helperBadge.style.color = "#fda4af";
     }
 
@@ -511,21 +512,21 @@ export function iniciar(contenedor, onTerminar) {
     el.statusPill.classList.remove("is-green", "is-hot");
 
     if (game.zona === "verde") {
-      el.statusPill.textContent = "🫧 ¡PRODUCIENDO O₂!";
+      el.statusPill.textContent = t("🫧 ¡PRODUCIENDO O₂!");
       el.statusPill.classList.add("is-green");
       el.artyText.innerHTML =
-        '<strong style="color:#6ee7b7;">¡Genial!</strong> El reactor está en zona verde generando oxígeno. <strong style="color:#fcd34d;">¡Toca las burbujas</strong> para llenar el tanque más rápido!';
+        t('<strong style="color:#6ee7b7;">¡Genial!</strong> El reactor está en zona verde generando oxígeno. <strong style="color:#fcd34d;">¡Toca las burbujas</strong> para llenar el tanque más rápido!');
     } else if (game.zona === "bajo") {
-      el.statusPill.textContent = "⚡ SUBE EL VOLTAJE";
-      el.artyText.innerHTML = `<strong style="color:#fcd34d;">Paso 1:</strong> Enciende cristales o mueve la palanca hasta la <strong style="color:#6ee7b7;">zona verde (${minGreen} V – ${maxGreen} V)</strong>.`;
+      el.statusPill.textContent = t("⚡ SUBE EL VOLTAJE");
+      el.artyText.innerHTML = t('<strong style="color:#fcd34d;">Paso 1:</strong> Enciende cristales o mueve la palanca hasta la <strong style="color:#6ee7b7;">zona verde ({a} V – {b} V)</strong>.', { a: minGreen, b: maxGreen });
     } else if (alerta) {
-      el.statusPill.textContent = "🚨 ¡SE SOBRECALIENTA!";
+      el.statusPill.textContent = t("🚨 ¡SE SOBRECALIENTA!");
       el.statusPill.classList.add("is-hot");
-      el.artyText.innerHTML = `<strong style="color:#fda4af;">¡PELIGRO!</strong> El reactor está a punto de fallar. <strong style="color:#6ee7b7;">Baja el voltaje a ${game.targetVolt} V</strong> ya, o pulsa ENFRIAR para ganar tiempo.`;
+      el.artyText.innerHTML = t('<strong style="color:#fda4af;">¡PELIGRO!</strong> El reactor está a punto de fallar. <strong style="color:#6ee7b7;">Baja el voltaje a {n} V</strong> ya, o pulsa ENFRIAR para ganar tiempo.', { n: game.targetVolt });
     } else {
-      el.statusPill.textContent = "🔥 DEMASIADA ENERGÍA";
+      el.statusPill.textContent = t("🔥 DEMASIADA ENERGÍA");
       el.statusPill.classList.add("is-hot");
-      el.artyText.innerHTML = `<strong style="color:#fda4af;">¡Uy, mucha energía!</strong> El reactor se está calentando. Baja la palanca hacia <strong style="color:#6ee7b7;">${game.targetVolt} V</strong> antes de que se sobrecaliente.`;
+      el.artyText.innerHTML = t('<strong style="color:#fda4af;">¡Uy, mucha energía!</strong> El reactor se está calentando. Baja la palanca hacia <strong style="color:#6ee7b7;">{n} V</strong> antes de que se sobrecaliente.', { n: game.targetVolt });
     }
   }
 
@@ -540,13 +541,13 @@ export function iniciar(contenedor, onTerminar) {
     if (key !== tempKey) {
       tempKey = key;
       if (nivel === "cool") {
-        el.tempText.textContent = "❄️ Fresquita y segura";
+        el.tempText.textContent = t("❄️ Fresquita y segura");
         el.tempText.style.color = "#34d399";
       } else if (nivel === "warm") {
-        el.tempText.textContent = game.zona === "caliente" ? "🌡️ Tibia · ¡Baja el voltaje!" : "🌡️ Tibia · Enfriándose";
+        el.tempText.textContent = game.zona === "caliente" ? t("🌡️ Tibia · ¡Baja el voltaje!") : t("🌡️ Tibia · Enfriándose");
         el.tempText.style.color = "#fcd34d";
       } else {
-        el.tempText.textContent = "🔥 ¡PELIGRO! Baja el voltaje";
+        el.tempText.textContent = t("🔥 ¡PELIGRO! Baja el voltaje");
         el.tempText.style.color = "#fb7185";
       }
     }
@@ -554,7 +555,7 @@ export function iniciar(contenedor, onTerminar) {
 
     const cd = game.coolCooldown;
     el.btnCool.disabled = cd > 0 || game.finished;
-    el.coolLabel.textContent = cd > 0 ? `${cd.toFixed(1)} s` : "ENFRIAR";
+    el.coolLabel.textContent = cd > 0 ? `${cd.toFixed(1)} s` : t("ENFRIAR");
   }
 
   function coolReactor() {

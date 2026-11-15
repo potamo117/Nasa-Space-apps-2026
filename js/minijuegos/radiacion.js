@@ -1,6 +1,7 @@
 import "../ui/iconos.js";
 import { nivelDe } from "../core/dificultad.js";
 import { eventoSolarDestacado, textoDonki } from "../core/donki.js";
+import { t } from "../core/i18n.js";
 
 export function iniciar(contenedor, onTerminar) {
   // Cargar CSS automáticamente si se abre desde el index.html principal
@@ -24,11 +25,11 @@ export function iniciar(contenedor, onTerminar) {
 
       <div class="lg-hud lg-hud-top">
         <div class="lg-hud-group">
-          <div class="lg-pill">Oleada <b data-el="waveValue">1</b>/<span data-el="waveTotal">1</span></div>
-          <div class="lg-pill risk" data-el="statRisk">☀️ Riesgo <b data-el="riskValue">85</b></div>
+          <div class="lg-pill">${t('Oleada')} <b data-el="waveValue">1</b>/<span data-el="waveTotal">1</span></div>
+          <div class="lg-pill risk" data-el="statRisk">☀️ ${t('Riesgo')} <b data-el="riskValue">85</b></div>
         </div>
 
-        <div class="lg-timer" data-el="statTimer" aria-label="Tiempo restante">
+        <div class="lg-timer" data-el="statTimer" aria-label="${t('Tiempo restante')}">
           <svg class="lg-timer-ring" viewBox="0 0 44 44" aria-hidden="true">
             <circle class="lg-ring-bg" cx="22" cy="22" r="19" />
             <circle class="lg-ring-fg" data-el="timerRing" cx="22" cy="22" r="19" />
@@ -38,8 +39,8 @@ export function iniciar(contenedor, onTerminar) {
 
         <div class="lg-hud-group right">
           <div class="lg-pill">⭐ <b data-el="scoreValue">0</b></div>
-          <button class="lg-icon-btn" data-el="btnSound" type="button" aria-label="Sonido">🔊</button>
-          <button class="lg-icon-btn" data-el="btnPause" type="button" aria-label="Pausa">⏸</button>
+          <button class="lg-icon-btn" data-el="btnSound" type="button" aria-label="${t('Sonido')}">🔊</button>
+          <button class="lg-icon-btn" data-el="btnPause" type="button" aria-label="${t('Pausa')}">⏸</button>
         </div>
       </div>
 
@@ -86,9 +87,9 @@ export function iniciar(contenedor, onTerminar) {
   function getDifficulty(riskScore) {
     const risk = clamp(Math.round(Number(riskScore) || 0), 0, 100);
     let tier;
-    if (risk < 60) tier = { id: 'moderado', label: 'Moderado', zones: 2, color: '#facc15', emoji: '🌤️' };
-    else if (risk < 88) tier = { id: 'elevado', label: 'Elevado', zones: 2, color: '#fb923c', emoji: '☀️' };
-    else tier = { id: 'extremo', label: 'Extremo', zones: 3, color: '#f43f5e', emoji: '🔥' };
+    if (risk < 60) tier = { id: 'moderado', label: t('Moderado'), zones: 2, color: '#facc15', emoji: '🌤️' };
+    else if (risk < 88) tier = { id: 'elevado', label: t('Elevado'), zones: 2, color: '#fb923c', emoji: '☀️' };
+    else tier = { id: 'extremo', label: t('Extremo'), zones: 3, color: '#f43f5e', emoji: '🔥' };
 
     return {
       risk,
@@ -120,9 +121,9 @@ export function iniciar(contenedor, onTerminar) {
   const TAU = Math.PI * 2;
   const SUN = { x: 78, y: 86, r: 60 };
   const MODULES = [
-    { id: 'lab', name: 'Laboratorio', icon: '🔬', x: 330, y: 330, w: 205, h: 150, windows: [0.3, 0.7] },
-    { id: 'dorm', name: 'Dormitorio', icon: '🛏️', x: 555, y: 295, w: 220, h: 185, windows: [0.22, 0.5, 0.78] },
-    { id: 'ctrl', name: 'Control', icon: '📡', x: 795, y: 330, w: 180, h: 150, windows: [0.5] }
+    { id: 'lab', name: t('Laboratorio'), icon: '🔬', x: 330, y: 330, w: 205, h: 150, windows: [0.3, 0.7] },
+    { id: 'dorm', name: t('Dormitorio'), icon: '🛏️', x: 555, y: 295, w: 220, h: 185, windows: [0.22, 0.5, 0.78] },
+    { id: 'ctrl', name: t('Control'), icon: '📡', x: 795, y: 330, w: 180, h: 150, windows: [0.5] }
   ];
   const ROOF = { height: 52, inset: 6, gap: 8 };
 
@@ -138,29 +139,29 @@ export function iniciar(contenedor, onTerminar) {
   }
 
   const TEXT = {
-    intro: '¡Hola! Soy <b>Lumi</b> 🤖. El Sol está lanzando una <b>tormenta solar</b>. ¿Me ayudas a proteger el refugio?',
-    start: '¡Arrastra las placas blancas a las <b>zonas amarillas</b> ⚠️!',
-    selected: '¡Bien! Ahora toca una <b>zona amarilla</b> ⚠️ para colocar la placa.',
-    needPlate: 'Primero elige una <b>placa de polietileno</b> de abajo 👇',
-    alreadySafe: 'Esa zona ya está protegida ✅. ¡Busca una zona amarilla!',
-    missed: 'Casi... suelta la placa <b>justo encima</b> de una zona amarilla ⚠️',
-    praise: ['¡Excelente! 🛡️', '¡Muy bien, guardián! ✨', '¡Zona protegida! 💚', '¡Así se hace! 🚀', '¡Genial! Los astronautas te lo agradecen 👩‍🚀'],
-    leak: (name) => `¡Ay! Entran partículas al <b>${name}</b>. ¡Ponle una placa!`,
-    hurry: '¡Rápido! ⏰ La oleada está por llegar.',
-    allDone: '¡Lo lograste! Todo el refugio está blindado 🎉',
-    paused: 'Juego en pausa. ¡Aquí te espero! 😊',
+    intro: t('¡Hola! Soy <b>Lumi</b> 🤖. El Sol está lanzando una <b>tormenta solar</b>. ¿Me ayudas a proteger el refugio?'),
+    start: t('¡Arrastra las placas blancas a las <b>zonas amarillas</b> ⚠️!'),
+    selected: t('¡Bien! Ahora toca una <b>zona amarilla</b> ⚠️ para colocar la placa.'),
+    needPlate: t('Primero elige una <b>placa de polietileno</b> de abajo 👇'),
+    alreadySafe: t('Esa zona ya está protegida ✅. ¡Busca una zona amarilla!'),
+    missed: t('Casi... suelta la placa <b>justo encima</b> de una zona amarilla ⚠️'),
+    praise: ['¡Excelente! 🛡️', '¡Muy bien, guardián! ✨', '¡Zona protegida! 💚', '¡Así se hace! 🚀', '¡Genial! Los astronautas te lo agradecen 👩‍🚀'].map((x) => t(x)),
+    leak: (name) => t('¡Ay! Entran partículas al <b>{name}</b>. ¡Ponle una placa!', { name }),
+    hurry: t('¡Rápido! ⏰ La oleada está por llegar.'),
+    allDone: t('¡Lo lograste! Todo el refugio está blindado 🎉'),
+    paused: t('Juego en pausa. ¡Aquí te espero! 😊'),
     tierBrief: {
-      moderado: 'El Sol está un poco inquieto. ¡Cubre las zonas descubiertas antes de que llegue la tormenta!',
-      elevado: 'Se acerca una tormenta fuerte. Cubre las zonas descubiertas antes de que llegue la oleada.',
-      extremo: '¡Tormenta muy intensa! Hay 3 zonas descubiertas y poco tiempo. ¡Sé muy rápido!'
+      moderado: t('El Sol está un poco inquieto. ¡Cubre las zonas descubiertas antes de que llegue la tormenta!'),
+      elevado: t('Se acerca una tormenta fuerte. Cubre las zonas descubiertas antes de que llegue la oleada.'),
+      extremo: t('¡Tormenta muy intensa! Hay 3 zonas descubiertas y poco tiempo. ¡Sé muy rápido!')
     }
   };
 
   const FACTS = [
-    'A veces el Sol lanza "estornudos" de energía llamados <b>estallidos solares</b>. ¡Sus partículas viajan rapidísimo por el espacio!',
-    'En la Tierra, el aire y el campo magnético nos protegen. La Luna casi no tiene aire ni campo magnético, por eso los astronautas necesitan <b>escudos</b>.',
-    'El <b>polietileno</b> es un plástico con muchísimo hidrógeno, y el hidrógeno es muy bueno para frenar las partículas del Sol.',
-    'La radiación se mide con unidades como el <b>microgray (μGy)</b>. Un número más grande significa más radiación.'
+    t('A veces el Sol lanza "estornudos" de energía llamados <b>estallidos solares</b>. ¡Sus partículas viajan rapidísimo por el espacio!'),
+    t('En la Tierra, el aire y el campo magnético nos protegen. La Luna casi no tiene aire ni campo magnético, por eso los astronautas necesitan <b>escudos</b>.'),
+    t('El <b>polietileno</b> es un plástico con muchísimo hidrógeno, y el hidrógeno es muy bueno para frenar las partículas del Sol.'),
+    t('La radiación se mide con unidades como el <b>microgray (μGy)</b>. Un número más grande significa más radiación.')
   ];
 
   /* ---------------- AUDIO SINTETIZADO ---------------- */
@@ -1113,22 +1114,22 @@ export function iniciar(contenedor, onTerminar) {
     const w = state.wave;
     say(TEXT.tierBrief[w.tier.id], w.tier.id === 'extremo' ? 'worried' : 'neutral');
     openModal(`
-      <div class="lg-modal-badge">Alerta Solar Única</div>
+      <div class="lg-modal-badge">${t('Alerta Solar Única')}</div>
       ${mascot(w.tier.id === 'extremo' ? 'worried' : 'neutral')}
-      <h2>${w.tier.emoji} Tormenta <span style="color:${w.tier.color}">${w.tier.label.toLowerCase()}</span></h2>
+      <h2>${w.tier.emoji} ${t('Tormenta {nivel}', { nivel: `<span style="color:${w.tier.color}">${w.tier.label.toLowerCase()}</span>` })}</h2>
       <p>${TEXT.tierBrief[w.tier.id]}</p>
       <div class="lg-chips">
-        <span class="lg-chip" style="--c:${w.tier.color}">☀️ Riesgo <b>${w.risk}</b> · ${w.radiation.toFixed(1)} μGy/h</span>
-        <span class="lg-chip">⚠️ <b>${w.uncoveredZones}</b> zonas</span>
+        <span class="lg-chip" style="--c:${w.tier.color}">☀️ ${t('Riesgo')} <b>${w.risk}</b> · ${w.radiation.toFixed(1)} μGy/h</span>
+        <span class="lg-chip">⚠️ <b>${w.uncoveredZones}</b> ${t('zonas')}</span>
         <span class="lg-chip">⏱️ <b>${w.timeLimit}</b> s</span>
       </div>
-      <div class="lg-btn-row"><button class="lg-btn" data-action="go">¡A blindar! 🛡️</button></div>
+      <div class="lg-btn-row"><button class="lg-btn" data-action="go">${t('¡A blindar! 🛡️')}</button></div>
     `);
   }
 
   function countdown(done) {
     state.phase = 'countdown';
-    const seq = ['3', '2', '1', '¡YA!'];
+    const seq = ['3', '2', '1', t('¡YA!')];
     const run = state.runId;
     let i = 0;
     const step = () => {
@@ -1163,7 +1164,7 @@ export function iniciar(contenedor, onTerminar) {
     const needed = fixed + countZones('open');
     const success = fixed === needed;
     updateTimer();
-    showBanner(success ? '🛡️ ¡Escudo listo! Llega la oleada…' : '☀️ ¡Llega la oleada solar!');
+    showBanner(success ? t('🛡️ ¡Escudo listo! Llega la oleada…') : t('☀️ ¡Llega la oleada solar!'));
     Sound.wave();
     scene.intensity = 1;
     scene.bigWave(1.5);
@@ -1206,27 +1207,27 @@ export function iniciar(contenedor, onTerminar) {
 
     if (r.success) {
       Sound.success();
-      say('¡Refugio a salvo! Las placas frenaron las partículas 💚', 'happy');
+      say(t('¡Refugio a salvo! Las placas frenaron las partículas 💚'), 'happy');
     } else {
       Sound.warning();
-      say('Algunas partículas entraron. ¡Puedes reintentarlo! 💪', 'worried');
+      say(t('Algunas partículas entraron. ¡Puedes reintentarlo! 💪'), 'worried');
     }
 
     openModal(`
       <div class="lg-result ${r.success ? 'lg-result-success' : 'lg-result-warning'}">
-        <div class="lg-modal-badge">Resultado de Defensa</div>
+        <div class="lg-modal-badge">${t('Resultado de Defensa')}</div>
         ${mascot(r.success ? 'happy' : 'worried')}
-        <h2>${r.success ? '¡Refugio a salvo! 🎉' : '¡Cuidado! Entró radiación ⚠️'}</h2>
+        <h2>${r.success ? t('¡Refugio a salvo! 🎉') : t('¡Cuidado! Entró radiación ⚠️')}</h2>
         <div class="lg-stars">${starsHTML(r.stars, 3)}</div>
-        <div class="lg-points">+${r.total} <small>puntos</small></div>
+        <div class="lg-points">+${r.total} <small>${t('puntos')}</small></div>
         <p>${r.success
-          ? 'Las placas de polietileno frenaron la tormenta solar. ¡Los astronautas están a salvo!'
-          : `Quedaron <b>${left}</b> ${left === 1 ? 'zona' : 'zonas'} sin placa.`}</p>
+          ? t('Las placas de polietileno frenaron la tormenta solar. ¡Los astronautas están a salvo!')
+          : (left === 1 ? t('Quedó <b>{n}</b> zona sin placa.', { n: left }) : t('Quedaron <b>{n}</b> zonas sin placa.', { n: left }))}</p>
         <p class="lg-tip">💡 ${nextFact()}</p>
         <div class="lg-btn-row">
           ${r.success
-            ? '<button class="lg-btn" data-action="finish">Volver a la Base Lunar 🚀</button>'
-            : '<button class="lg-btn" data-action="retry">🔁 Reintentar defensa</button>'}
+            ? `<button class="lg-btn" data-action="finish">${t('Volver a la Base Lunar 🚀')}</button>`
+            : `<button class="lg-btn" data-action="retry">${t('🔁 Reintentar defensa')}</button>`}
         </div>
       </div>
     `);
@@ -1249,16 +1250,16 @@ export function iniciar(contenedor, onTerminar) {
     say(TEXT.intro);
     openModal(`
       <div class="lg-logo-big">LUNAR GUARD</div>
-      <div class="lg-subtitle">☀️ Escudos contra Tormenta Solar ☀️</div>
+      <div class="lg-subtitle">☀️ ${t('Escudos contra Tormenta Solar')} ☀️</div>
       ${mascot('happy')}
-      <p>¡Viene una <b>tormenta solar</b>! Tapa los huecos del refugio para proteger a los astronautas.</p>
+      <p>${t('¡Viene una <b>tormenta solar</b>! Tapa los huecos del refugio para proteger a los astronautas.')}</p>
       ${textoDonki() ? `<p class="lg-tip">🛰️ ${textoDonki()}</p>` : ''}
       <div class="lg-steps">
-        <div class="lg-step"><span class="ico">👆</span>Toma una <b>placa</b></div>
-        <div class="lg-step"><span class="ico">⚠️</span>Ponla en lo <b>amarillo</b></div>
-        <div class="lg-step"><span class="ico">✅</span>¡Se pone <b>verde</b>!</div>
+        <div class="lg-step"><span class="ico">👆</span>${t('Toma una <b>placa</b>')}</div>
+        <div class="lg-step"><span class="ico">⚠️</span>${t('Ponla en lo <b>amarillo</b>')}</div>
+        <div class="lg-step"><span class="ico">✅</span>${t('¡Se pone <b>verde</b>!')}</div>
       </div>
-      <div class="lg-btn-row"><button class="lg-btn" data-action="start">¡Comenzar misión! 🚀</button></div>
+      <div class="lg-btn-row"><button class="lg-btn" data-action="start">${t('¡Comenzar misión! 🚀')}</button></div>
     `);
   }
 
@@ -1270,11 +1271,11 @@ export function iniciar(contenedor, onTerminar) {
     say(TEXT.paused);
     openModal(`
       ${mascot('neutral')}
-      <h2>Juego en pausa ⏸</h2>
-      <p>Tómate un respiro. El Sol también esperará.</p>
+      <h2>${t('Juego en pausa ⏸')}</h2>
+      <p>${t('Tómate un respiro. El Sol también esperará.')}</p>
       <div class="lg-btn-row">
-        <button class="lg-btn ghost" data-action="restart">🔄 Reiniciar</button>
-        <button class="lg-btn" data-action="resume">▶ Continuar</button>
+        <button class="lg-btn ghost" data-action="restart">🔄 ${t('Reiniciar')}</button>
+        <button class="lg-btn" data-action="resume">▶ ${t('Continuar')}</button>
       </div>
     `);
   }

@@ -2,6 +2,7 @@
 import { segundosParaCritico, consumoSector } from "../core/energia.js";
 import { getSegundosPorHora } from "../core/reloj.js";
 import { infoDia } from "../core/eventos.js";
+import { t } from "../core/i18n.js";
 const SECTORES = ["agua", "comida", "oxigeno", "radiacion"];
 const $ = (id) => document.getElementById(id);
 
@@ -42,9 +43,9 @@ export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
     relojHora.style.color = hora.startsWith("00:") ? "var(--alert-red)" : "";
   }
   const relojDia = $("reloj-dia");
-  if (relojDia) relojDia.textContent = `DÍA ${dia}`;
+  if (relojDia) relojDia.textContent = t("DÍA {dia}", { dia });
   const titulo = $("dia-titulo");
-  if (titulo) titulo.textContent = infoDia(dia).titulo.toUpperCase();
+  if (titulo) titulo.textContent = t(infoDia(dia).titulo).toUpperCase();
 
   const energia = Math.max(0, Math.min(100, Math.round(estado.electricidad)));
   const energiaTxt = $("energia-porcentaje");
@@ -82,13 +83,13 @@ export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
     }
     const tm = $(`tm-${sector}`);
     if (tm) {
-      const t = tiempos[sector];
-      tm.textContent = Number.isFinite(t)
-        ? `${sector === prioritario ? "🔥 PRIORIDAD · " : ""}⏱ ${Math.ceil(t)} s`
+      const seg = tiempos[sector];
+      tm.textContent = Number.isFinite(seg)
+        ? `${sector === prioritario ? t("🔥 PRIORIDAD · ") : ""}⏱ ${Math.ceil(seg)} s`
         : "\u00a0";
     }
     const co = $(`co-${sector}`);
-    if (co) co.textContent = estado.interruptores[sector] ? `⚡ −${(consumoSector(sector) * sPorSeg).toFixed(1)}%/s` : "sin consumo";
+    if (co) co.textContent = estado.interruptores[sector] ? `⚡ −${(consumoSector(sector) * sPorSeg).toFixed(1)}%/s` : t("sin consumo");
 
     // Interruptor: refleja estado.interruptores (por ejemplo tras un apagón o al reiniciar).
     const encendido = estado.interruptores[sector];
@@ -96,7 +97,7 @@ export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
     if (sw) sw.classList.toggle("active", encendido);
     const st = $(`st-${sector}`);
     if (st) {
-      st.textContent = encendido ? "CONECTADO" : "APAGADO";
+      st.textContent = encendido ? t("CONECTADO") : t("APAGADO");
       st.classList.toggle("off", !encendido);
     }
 

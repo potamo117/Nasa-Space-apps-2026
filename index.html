@@ -1,6 +1,6 @@
 <!--Código cabina-->
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-titulo="Simulador de Supervivencia Lunar - NASA Space Apps">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/cockpit.css" />
   <link rel="stylesheet" href="css/cookies.css" />
+  <link rel="stylesheet" href="css/idioma.css" />
 </head>
 <body>
   <div class="space-backdrop">
@@ -20,35 +21,36 @@
   <main class="cockpit">
     <section class="top-deck">
       <aside class="panel clock-panel">
-        <div class="panel-header">MISIÓN LUNAR</div>
+        <div class="panel-header" data-i18n="MISIÓN LUNAR">MISIÓN LUNAR</div>
         <div class="clock-display">
           <span id="reloj-hora">06:00</span>
           <span id="reloj-dia" class="day-badge">DÍA 1</span>
         </div>
         <div class="clock-sub" id="dia-titulo">TURNO SOLAR: 06h - 20h</div>
         <div class="panel-tools">
-          <button type="button" class="tool-btn" id="btn-pausa" aria-label="Pausa">⏸</button>
-          <button type="button" class="tool-btn" id="btn-sonido" aria-label="Sonido">🔊</button>
+          <button type="button" class="tool-btn" id="btn-pausa" aria-label="Pausa" data-i18n-aria="Pausa">⏸</button>
+          <button type="button" class="tool-btn" id="btn-sonido" aria-label="Sonido" data-i18n-aria="Sonido">🔊</button>
         </div>
+        <div id="selector-idioma-cabina"></div>
       </aside>
 
       <section class="panel monitor-panel" id="monitor-central">
         <div class="monitor-header">
           <span class="rec-dot"></span>
-          <span>MONITOR CENTRAL DE EVENTOS</span>
+          <span data-i18n="MONITOR CENTRAL DE EVENTOS">MONITOR CENTRAL DE EVENTOS</span>
           <span class="nasa-tag">BASE ARTEMIS-KID</span>
         </div>
         <div class="monitor-screen" id="monitor-contenido">
           <div class="estado-nominal">
             <div class="nominal-icon">🚀</div>
-            <h2>TODOS LOS SISTEMAS ESTABLES</h2>
-            <p>La base lunar funciona con normalidad. ¡Vigila tus recursos!</p>
+            <h2 data-i18n="TODOS LOS SISTEMAS ESTABLES">TODOS LOS SISTEMAS ESTABLES</h2>
+            <p data-i18n="La base lunar funciona con normalidad. ¡Vigila tus recursos!">La base lunar funciona con normalidad. ¡Vigila tus recursos!</p>
           </div>
         </div>
       </section>
 
       <aside class="panel energy-panel">
-        <div class="panel-header">ENERGÍA</div>
+        <div class="panel-header" data-i18n="ENERGÍA">ENERGÍA</div>
         <div class="energy-value" id="energia-porcentaje">100%</div>
         <div class="energy-bar-wrapper">
           <div class="energy-bar-fill" id="energia-barra" style="height: 100%;"></div>
@@ -65,7 +67,7 @@
       <div class="sector-unit" data-sector="agua">
         <div class="graph-box">
           <div class="graph-header">
-            <span>AGUA</span>
+            <span data-i18n="AGUA">AGUA</span>
             <span id="val-agua" class="stat-num">100%</span>
           </div>
           <canvas id="chart-agua" width="220" height="85"></canvas>
@@ -73,10 +75,10 @@
         </div>
         <button class="sector-btn btn-agua" data-open-modal="agua">
           <span class="btn-icon">💧</span>
-          <span class="btn-label">REPARAR AGUA</span>
+          <span class="btn-label" data-i18n="REPARAR AGUA">REPARAR AGUA</span>
         </button>
         <div class="switch-container">
-          <button class="power-switch active" id="sw-agua" data-toggle-sector="agua" aria-label="Interruptor Agua">
+          <button class="power-switch active" id="sw-agua" data-toggle-sector="agua" aria-label="Interruptor Agua" data-i18n-aria="Interruptor Agua">
             <span class="switch-led"></span>
             <span class="switch-knob"></span>
           </button>
@@ -90,7 +92,7 @@
       <div class="sector-unit" data-sector="comida">
         <div class="graph-box">
           <div class="graph-header">
-            <span>COMIDA</span>
+            <span data-i18n="COMIDA">COMIDA</span>
             <span id="val-comida" class="stat-num">100%</span>
           </div>
           <canvas id="chart-comida" width="220" height="85"></canvas>
@@ -98,10 +100,10 @@
         </div>
         <button class="sector-btn btn-comida" data-open-modal="comida">
           <span class="btn-icon">🌱</span>
-          <span class="btn-label">INVERNADERO</span>
+          <span class="btn-label" data-i18n="INVERNADERO">INVERNADERO</span>
         </button>
         <div class="switch-container">
-          <button class="power-switch active" id="sw-comida" data-toggle-sector="comida" aria-label="Interruptor Comida">
+          <button class="power-switch active" id="sw-comida" data-toggle-sector="comida" aria-label="Interruptor Comida" data-i18n-aria="Interruptor Comida">
             <span class="switch-led"></span>
             <span class="switch-knob"></span>
           </button>
@@ -115,7 +117,7 @@
       <div class="sector-unit" data-sector="oxigeno">
         <div class="graph-box">
           <div class="graph-header">
-            <span>OXÍGENO</span>
+            <span data-i18n="OXÍGENO">OXÍGENO</span>
             <span id="val-oxigeno" class="stat-num">100%</span>
           </div>
           <canvas id="chart-oxigeno" width="220" height="85"></canvas>
@@ -123,10 +125,10 @@
         </div>
         <button class="sector-btn btn-oxigeno" data-open-modal="oxigeno">
           <span class="btn-icon">🫧</span>
-          <span class="btn-label">GENERADOR O₂</span>
+          <span class="btn-label" data-i18n="GENERADOR O₂">GENERADOR O₂</span>
         </button>
         <div class="switch-container">
-          <button class="power-switch active" id="sw-oxigeno" data-toggle-sector="oxigeno" aria-label="Interruptor Oxígeno">
+          <button class="power-switch active" id="sw-oxigeno" data-toggle-sector="oxigeno" aria-label="Interruptor Oxígeno" data-i18n-aria="Interruptor Oxígeno">
             <span class="switch-led"></span>
             <span class="switch-knob"></span>
           </button>
@@ -140,7 +142,7 @@
       <div class="sector-unit" data-sector="radiacion">
         <div class="graph-box">
           <div class="graph-header">
-            <span>RADIACIÓN</span>
+            <span data-i18n="RADIACIÓN">RADIACIÓN</span>
             <span id="val-radiacion" class="stat-num">0%</span>
           </div>
           <canvas id="chart-radiacion" width="220" height="85"></canvas>
@@ -148,10 +150,10 @@
         </div>
         <button class="sector-btn btn-radiacion" data-open-modal="radiacion">
           <span class="btn-icon">☢️</span>
-          <span class="btn-label">ESCUDOS</span>
+          <span class="btn-label" data-i18n="ESCUDOS">ESCUDOS</span>
         </button>
         <div class="switch-container">
-          <button class="power-switch active" id="sw-radiacion" data-toggle-sector="radiacion" aria-label="Interruptor Radiación">
+          <button class="power-switch active" id="sw-radiacion" data-toggle-sector="radiacion" aria-label="Interruptor Radiación" data-i18n-aria="Interruptor Radiación">
             <span class="switch-led"></span>
             <span class="switch-knob"></span>
           </button>
@@ -167,8 +169,8 @@
   <div class="modal-overlay hidden" id="modal-minijuego">
     <div class="modal-window">
       <div class="modal-top">
-        <h3 id="modal-titulo">SISTEMA DE REPARACIÓN</h3>
-        <button class="modal-close" id="btn-cerrar-modal">✖</button>
+        <h3 id="modal-titulo" data-i18n="SISTEMA DE REPARACIÓN">SISTEMA DE REPARACIÓN</h3>
+        <button class="modal-close" id="btn-cerrar-modal" aria-label="Cerrar" data-i18n-aria="Cerrar">✖</button>
       </div>
       <div class="modal-body" id="modal-contenedor-juego"></div>
     </div>
