@@ -1,9 +1,9 @@
 // Sonidos sintetizados (Web Audio) y vibración para móvil. Sin archivos externos.
 import { escuchar } from "../core/bus.js";
+import { leer, escribir } from "../core/almacen.js";
 
 let ctx = null;
-let silencio = false;
-try { silencio = localStorage.getItem("lunar-silencio") === "1"; } catch (e) { /* sin almacenamiento */ }
+let silencio = leer("silencio", "0") === "1";
 
 export function desbloquearAudio() {
   try {
@@ -20,7 +20,7 @@ export function sonidoActivo() { return !silencio; }
 
 export function alternarSonido() {
   silencio = !silencio;
-  try { localStorage.setItem("lunar-silencio", silencio ? "1" : "0"); } catch (e) { /* ok */ }
+  escribir("silencio", silencio ? "1" : "0");
   return !silencio;
 }
 

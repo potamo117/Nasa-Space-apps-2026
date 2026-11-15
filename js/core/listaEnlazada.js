@@ -2,7 +2,7 @@ import { estado, SECTORES } from "./estado.js";
 import { emitir, escuchar } from "./bus.js";
 
 export const TOTAL_DIAS = 5;
-export const SEGUNDOS_PRORROGA = 12;
+export const SEGUNDOS_PRORROGA = 20;
 
 export class DiaNode {
   constructor(numeroDia) {

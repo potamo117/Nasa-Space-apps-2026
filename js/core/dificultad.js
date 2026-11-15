@@ -1,8 +1,9 @@
 // Perfil de dificultad (Fácil / Normal / Difícil) y nivel adaptativo de cada minijuego.
 export const PERFILES = {
-  facil:   { id: "facil",   nombre: "Fácil",   segundosPorHora: 10,  prob: 0.75, fallo: 6,  consumo: 0.85, avisoS: 8, nivelInicial: 0, nivelMax: 1 },
-  normal:  { id: "normal",  nombre: "Normal",  segundosPorHora: 8,   prob: 1,    fallo: 8,  consumo: 1,    avisoS: 6, nivelInicial: 1, nivelMax: 2 },
-  dificil: { id: "dificil", nombre: "Difícil", segundosPorHora: 6.5, prob: 1.25, fallo: 10, consumo: 1.1,  avisoS: 4, nivelInicial: 2, nivelMax: 2 },
+  // Pensado para niñas y niños de 7 a 12 años: "Normal" es tranquilo; "Difícil" es el reto.
+  facil:   { id: "facil",   nombre: "Fácil",   segundosPorHora: 12, prob: 0.6, fallo: 3.5, consumo: 0.7,  avisoS: 10, nivelInicial: 0, nivelMax: 1 },
+  normal:  { id: "normal",  nombre: "Normal",  segundosPorHora: 10, prob: 0.8, fallo: 5,   consumo: 0.85, avisoS: 8,  nivelInicial: 0, nivelMax: 2 },
+  dificil: { id: "dificil", nombre: "Difícil", segundosPorHora: 8,  prob: 1,   fallo: 7,   consumo: 1,    avisoS: 6,  nivelInicial: 1, nivelMax: 2 },
 };
 
 let perfilId = "normal";

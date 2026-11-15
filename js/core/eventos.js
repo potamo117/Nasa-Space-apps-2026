@@ -43,18 +43,18 @@ export const EVENTOS = [
 // Cada día tiene identidad propia: ritmo, intensidad máxima, probabilidad de eventos que se solapan
 // y eventos garantizados a una hora fija.
 export const DIAS = {
-  1: { titulo: "Día de adaptación", prob: 0.15, maxFuerza: 1, solapa: 0,
+  1: { titulo: "Día de adaptación", prob: 0.12, maxFuerza: 1, solapa: 0,
        garantizados: [{ hora: 8, id: 1 }],
        pronostico: "Aprende los controles: una falla leve te espera por la mañana." },
-  2: { titulo: "Operaciones normales", prob: 0.3, maxFuerza: 2, solapa: 0.08, garantizados: [],
+  2: { titulo: "Operaciones normales", prob: 0.22, maxFuerza: 2, solapa: 0.05, garantizados: [],
        pronostico: "Fallas moderadas. Algunas te dejarán elegir cómo responder." },
-  3: { titulo: "Primera tormenta solar", prob: 0.32, maxFuerza: 2, solapa: 0.15,
+  3: { titulo: "Primera tormenta solar", prob: 0.26, maxFuerza: 2, solapa: 0.1,
        garantizados: [{ hora: 13, id: 4 }],
        pronostico: "Se espera una fulguración solar a media tarde. ¡Protege los escudos!" },
-  4: { titulo: "Impactos en cadena", prob: 0.36, maxFuerza: 3, solapa: 0.25,
+  4: { titulo: "Impactos en cadena", prob: 0.3, maxFuerza: 3, solapa: 0.15,
        garantizados: [{ hora: 11, id: 8 }],
        pronostico: "Riesgo de micrometeoroides: varias fallas pueden llegar a la vez." },
-  5: { titulo: "El gran día: tormenta masiva", prob: 0.4, maxFuerza: 3, solapa: 0.3,
+  5: { titulo: "El gran día: tormenta masiva", prob: 0.34, maxFuerza: 3, solapa: 0.2,
        garantizados: [{ hora: 15, id: 9 }],
        pronostico: "Una eyección de masa coronal gigante se acerca. ¡Último esfuerzo!" },
 };

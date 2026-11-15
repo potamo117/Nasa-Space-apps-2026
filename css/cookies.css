@@ -1,0 +1,35 @@
+/* Aviso de cookies (mobile first). Se usa en el juego y en las páginas legales. */
+.cookies-fondo {
+  position: fixed; inset: 0; z-index: 500; background: rgba(3, 6, 15, 0.88);
+  display: flex; align-items: flex-end; justify-content: center; padding: 10px; overflow-y: auto;
+  font-family: 'Fredoka', system-ui, sans-serif; color: #fff;
+}
+.cookies-caja {
+  width: 100%; max-width: 520px; margin: auto 0 0; background: #1b243b; border: 3px solid #29b6f6;
+  border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+.cookies-caja h2 { font-size: 1.25rem; color: #80d8ff; }
+.cookies-caja p { font-size: 0.95rem; line-height: 1.4; color: #e3f2fd; }
+.cookies-padres { background: rgba(255, 213, 79, 0.12); border: 2px solid #ffd54f; border-radius: 12px; padding: 8px 10px; }
+.cookies-tipos { display: flex; flex-direction: column; gap: 8px; }
+.cookies-tipo { display: flex; gap: 10px; align-items: flex-start; background: #111726; border: 2px solid #2a395c; border-radius: 12px; padding: 8px 10px; cursor: pointer; }
+.cookies-tipo input { width: 22px; height: 22px; margin-top: 2px; flex: 0 0 auto; accent-color: #00e676; }
+.cookies-tipo span { font-size: 0.92rem; }
+.cookies-tipo small { display: block; color: #90a4ae; font-size: 0.8rem; margin-top: 2px; }
+.cookies-botones { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.cookies-btn {
+  min-height: 48px; border: none; border-radius: 14px; font-family: inherit; font-size: 1rem; font-weight: 700;
+  cursor: pointer; background: #384973; color: #fff; touch-action: manipulation;
+}
+.cookies-btn.principal { background: #00e676; color: #070b19; }
+.cookies-btn.guardar { background: #29b6f6; color: #070b19; }
+.cookies-link { background: none; border: none; color: #90caf9; text-decoration: underline; font-family: inherit; font-size: 0.95rem; cursor: pointer; min-height: 44px; }
+.cookies-link:disabled { color: #69f0ae; text-decoration: none; cursor: default; }
+.cookies-links { font-size: 0.85rem; text-align: center; }
+.cookies-links a { color: #90caf9; }
+@media (min-width: 600px) {
+  .cookies-fondo { align-items: center; }
+  .cookies-caja { margin: auto; }
+  .cookies-botones { grid-template-columns: 1fr 1fr 1fr; }
+}

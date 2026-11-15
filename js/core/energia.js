@@ -7,13 +7,13 @@ import { perfil } from "./dificultad.js";
 // ===== NÚMEROS AJUSTABLES (todos por HORA DE JUEGO, así no dependen de la escala del reloj) =====
 // Cada sector cuesta distinto y se degrada distinto al apagarlo: apagar es una decisión, no solo un castigo.
 export const SECTOR_CFG = {
-  comida:    { consumo: 1.6, sinEnergia: 2.5 },               // barato y aguanta apagado
-  agua:      { consumo: 2,   sinEnergia: 4 },
-  oxigeno:   { consumo: 2.4, sinEnergia: 7 },                 // vital: apagado se desploma
-  radiacion: { consumo: 2.4, sinEnergia: 4, escudo: 0.5 },    // escudos encendidos frenan a la mitad las fallas
+  comida:    { consumo: 1.6, sinEnergia: 1.5 },               // barato y aguanta apagado
+  agua:      { consumo: 2,   sinEnergia: 2.4 },
+  oxigeno:   { consumo: 2.4, sinEnergia: 4 },                 // vital: apagado se desploma
+  radiacion: { consumo: 2.4, sinEnergia: 2.4, escudo: 0.5 },    // escudos encendidos frenan a la mitad las fallas
 };
-export const DEGRADACION_FALLO = 8;          // % por hora de un sector con evento activo (dificultad Normal)
-export const RECUPERACION_AL_REPARAR = 12;   // % que se recupera al ganar el minijuego (no rellena al 100 %)
+export const DEGRADACION_FALLO = 5;          // % por hora de un sector con evento activo (valor de referencia; el real viene del perfil de dificultad)
+export const RECUPERACION_AL_REPARAR = 15;   // % que se recupera al ganar el minijuego (no rellena al 100 %)
 export const RECUPERACION_BONUS = 13;        // extra si se eligió "reparación a fondo" en un evento con elección
 const TICK_MS = 1000;                        // la simulación avanza cada segundo real
 // Radiación es al revés: 100 = peligro, 0 = seguro.

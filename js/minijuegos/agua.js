@@ -128,7 +128,8 @@ import { nivelDe } from '../core/dificultad.js';
   class MinijuegoAgua {
     constructor(opciones = {}) {
       this.size = opciones.size || 5;
-      this.intervaloMs = opciones.intervaloMs || 900; // ritmo de contaminación (dificultad adaptativa)
+      this.intervaloMs = opciones.intervaloMs || 1500; // ritmo de contaminación (dificultad adaptativa)
+      this.probResuelta = opciones.probResuelta ?? 0.4; // fracción de tuberías del camino que ya empiezan bien puestas
       this.onTerminar = typeof opciones.onTerminar === 'function'
         ? opciones.onTerminar
         : (res) => console.log('onTerminar:', res);
@@ -258,7 +259,8 @@ import { nivelDe } from '../core/dificultad.js';
             const tpl = plantillas[Math.floor(Math.random() * plantillas.length)];
             celda.puertos = { ...tpl };
           }
-          const giros = 1 + Math.floor(Math.random() * 3);
+          const yaResuelta = celda.enCaminoBase && Math.random() < this.probResuelta;
+          const giros = yaResuelta ? 0 : 1 + Math.floor(Math.random() * 3);
           for (let g = 0; g < giros; g++) {
             this.rotarPuertos90(celda);
           }
@@ -295,7 +297,11 @@ import { nivelDe } from '../core/dificultad.js';
 
         if (r === targetR && c === targetC) return true;
 
-        const dirs = [...DIRECCIONES].sort(() => Math.random() - 0.5);
+        // Camino más directo (más corto): casi siempre prefiere avanzar hacia la meta (E/S).
+        const azar = (a) => a.sort(() => Math.random() - 0.5);
+        const dirs = Math.random() < 0.2
+          ? azar([...DIRECCIONES])
+          : [...azar(DIRECCIONES.filter((d) => d.dr > 0 || d.dc > 0)), ...azar(DIRECCIONES.filter((d) => d.dr < 0 || d.dc < 0))];
         for (const d of dirs) {
           const nr = r + d.dr;
           const nc = c + d.dc;
@@ -788,7 +794,8 @@ export function iniciar(contenedor, onTerminar) {
   const juego = new window.MinijuegoAgua({
     size: 5,
     root: contenedor,
-    intervaloMs: [1150, 900, 700][nivelDe('agua')],
+    intervaloMs: [2000, 1500, 1100][nivelDe('agua')],
+    probResuelta: [0.5, 0.35, 0.15][nivelDe('agua')],
     onTerminar
   });
   return () => juego.destruir();

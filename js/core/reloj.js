@@ -4,8 +4,8 @@ import { getDiaActual, cierreAutomaticoJornada } from "./listaEnlazada.js";
 export const HORA_INICIO = 6;   // 06:00
 export const HORA_FIN = 20;     // 20:00
 
-// 1 hora de juego = 8 s reales por defecto (la dificultad lo cambia). Un día (06:00-20:00) ≈ 1 min 52 s.
-export const SEGUNDOS_POR_HORA_DEFECTO = 8;
+// 1 hora de juego = 10 s reales por defecto (la dificultad lo cambia). Un día (06:00-20:00) ≈ 2 min 20 s.
+export const SEGUNDOS_POR_HORA_DEFECTO = 10;
 let segundosPorHora = SEGUNDOS_POR_HORA_DEFECTO;
 let minutos = HORA_INICIO * 60;
 let timer = null;

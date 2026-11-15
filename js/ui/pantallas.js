@@ -2,6 +2,8 @@
 import { PERFILES } from "../core/dificultad.js";
 import { MEJORAS, LOGROS, mejorPuntuacion, logrosGuardados } from "../core/progreso.js";
 import { desbloquearAudio, sonido } from "./audio.js";
+import { leer, escribir } from "../core/almacen.js";
+import { abrirPreferenciasCookies } from "./cookies.js";
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -17,8 +19,8 @@ function crear(id, html, extra = "") {
   return overlay;
 }
 
-function lsGet(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
-function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ok */ } }
+const lsGet = (k, d) => leer(k.replace(/^lunar-/, ""), d);
+const lsSet = (k, v) => escribir(k.replace(/^lunar-/, ""), v);
 
 const estrellas = (n) => "⭐".repeat(n) + "☆".repeat(Math.max(0, 3 - n));
 
@@ -37,7 +39,9 @@ export function mostrarPantallaBienvenida(onIniciarJuego) {
     <p class="texto-chico">🏆 Mejor puntuación: <b>${mejor}</b> · 🎖️ Logros: <b>${nLogros}/${Object.keys(LOGROS).length}</b></p>
     <button id="btn-comenzar-mision" type="button" class="btn-grande verde">🚀 INICIAR MISIÓN</button>
     <button id="btn-como-jugar" type="button" class="btn-link">¿Cómo se juega?</button>
+    <p class="legal-links"><a href="terminos.html" target="_blank" rel="noopener">Términos</a> · <a href="privacidad.html" target="_blank" rel="noopener">Privacidad</a> · <button type="button" class="btn-link inline" data-abrir-cookies>🍪 Cookies</button></p>
   `);
+  overlay.querySelector("[data-abrir-cookies]").addEventListener("click", () => abrirPreferenciasCookies());
   const marcar = () => overlay.querySelectorAll(".dif-btn").forEach((b) => b.classList.toggle("activo", b.dataset.dif === dif));
   marcar();
   overlay.querySelectorAll(".dif-btn").forEach((b) => b.addEventListener("click", () => { dif = b.dataset.dif; lsSet("lunar-dificultad", dif); sonido.click(); marcar(); }));
@@ -86,7 +90,9 @@ export function mostrarPausa({ onContinuar, onReiniciar, onMenu }) {
     <button id="btn-continuar" type="button" class="btn-grande verde">▶ Continuar</button>
     <button id="btn-pausa-reiniciar" type="button" class="btn-grande azul">🔄 Reiniciar partida</button>
     <button id="btn-pausa-menu" type="button" class="btn-link">Menú principal</button>
+    <p class="legal-links"><a href="terminos.html" target="_blank" rel="noopener">Términos</a> · <a href="privacidad.html" target="_blank" rel="noopener">Privacidad</a> · <button type="button" class="btn-link inline" data-abrir-cookies>🍪 Cookies</button></p>
   `);
+  overlay.querySelector("[data-abrir-cookies]").addEventListener("click", () => abrirPreferenciasCookies());
   overlay.querySelector("#btn-continuar").addEventListener("click", () => { overlay.remove(); onContinuar(); });
   overlay.querySelector("#btn-pausa-reiniciar").addEventListener("click", () => { overlay.remove(); onReiniciar(); });
   overlay.querySelector("#btn-pausa-menu").addEventListener("click", () => { overlay.remove(); onMenu(); });

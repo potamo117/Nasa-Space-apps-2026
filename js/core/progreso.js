@@ -2,15 +2,13 @@
 import { estado } from "./estado.js";
 import { emitir } from "./bus.js";
 
-const LS_MEJOR = "lunar-mejor-puntuacion";
-const LS_LOGROS = "lunar-logros";
+import { leerJSON, escribirJSON } from "./almacen.js";
 
-function leerLS(clave, defecto) {
-  try { const v = localStorage.getItem(clave); return v === null ? defecto : JSON.parse(v); } catch (e) { return defecto; }
-}
-function escribirLS(clave, valor) {
-  try { localStorage.setItem(clave, JSON.stringify(valor)); } catch (e) { /* sin almacenamiento: no pasa nada */ }
-}
+const LS_MEJOR = "mejor-puntuacion";
+const LS_LOGROS = "logros";
+
+const leerLS = (clave, defecto) => leerJSON(clave, defecto);
+const escribirLS = (clave, valor) => escribirJSON(clave, valor);
 
 export const LOGROS = {
   primera:   { nombre: "Primera reparación", icono: "🔧", desc: "Repara tu primer sector." },
