@@ -1,9 +1,12 @@
+import { nivelDe } from "../core/dificultad.js";
+import { eventoSolarDestacado, textoDonki } from "../core/donki.js";
+
 export function iniciar(contenedor, onTerminar) {
   // Cargar CSS automáticamente si se abre desde el index.html principal
   if (!document.querySelector('link[href*="radiacion.css"]')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = './css/radiacion.css';
+    link.href = new URL('../../css/radiacion.css', import.meta.url).href;
     document.head.appendChild(link);
   }
 
@@ -97,7 +100,12 @@ export function iniciar(contenedor, onTerminar) {
   }
 
   function buildWaves() {
-    const baseRisk = Math.floor(Math.random() * 26) + 70; // Riesgo dinámico entre 70 y 95
+    // Riesgo según la fulguración real más fuerte de NASA DONKI (si hay datos) y la dificultad adaptativa.
+    const dk = eventoSolarDestacado();
+    const ajuste = (nivelDe('radiacion') - 1) * 4;
+    const baseRisk = dk
+      ? clamp(dk.riesgo + ajuste, 60, 98)
+      : clamp(Math.floor(Math.random() * 26) + 70 + ajuste, 60, 98);
     const baseRad = +(baseRisk * 0.14).toFixed(1);
     return CONFIG.waveEscalation.map((step, i) => {
       const risk = clamp(baseRisk + step.riskAdd, 0, 100);
@@ -1243,6 +1251,7 @@ export function iniciar(contenedor, onTerminar) {
       <div class="lg-subtitle">☀️ Escudos contra Tormenta Solar ☀️</div>
       ${mascot('happy')}
       <p>¡Viene una <b>tormenta solar</b>! Tapa los huecos del refugio para proteger a los astronautas.</p>
+      ${textoDonki() ? `<p class="lg-tip">🛰️ ${textoDonki()}</p>` : ''}
       <div class="lg-steps">
         <div class="lg-step"><span class="ico">👆</span>Toma una <b>placa</b></div>
         <div class="lg-step"><span class="ico">⚠️</span>Ponla en lo <b>amarillo</b></div>
@@ -1336,8 +1345,12 @@ export function iniciar(contenedor, onTerminar) {
     actions[b.dataset.action]();
   });
 
+  let destruido = false;
   function limpiarRecursos() {
+    if (destruido) return;
+    destruido = true;
     if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
     cancelDrag();
     scene.destroy();
   }
@@ -1378,7 +1391,11 @@ export function iniciar(contenedor, onTerminar) {
 
   showIntro();
   requestAnimationFrame(() => {
+    if (destruido) return;
     scene.resize();
     rafId = requestAnimationFrame(loop);
   });
+
+  // Se devuelve a modal.js para detener todo al cerrar la ventana.
+  return limpiarRecursos;
 }

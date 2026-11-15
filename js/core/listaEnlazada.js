@@ -2,7 +2,7 @@ import { estado, SECTORES } from "./estado.js";
 import { emitir, escuchar } from "./bus.js";
 
 export const TOTAL_DIAS = 5;
-export const SEGUNDOS_PRORROGA = 10;
+export const SEGUNDOS_PRORROGA = 12;
 
 export class DiaNode {
   constructor(numeroDia) {
@@ -18,6 +18,7 @@ export class DiaNode {
 
 let diaActual = null;
 let intervaloProrroga = null;
+let segundosRestantes = 0;
 let desuscribirFallos = null;
 let enProrrogaEmergencia = false;
 let misionTerminada = false;
@@ -60,9 +61,9 @@ export function cierreAutomaticoJornada() {
     return;
   }
 
-  // Fallos pendientes: bloquea el descanso y da 10 s reales extra.
+  // Fallos pendientes: bloquea el descanso y da unos segundos reales extra.
   enProrrogaEmergencia = true;
-  let segundosRestantes = SEGUNDOS_PRORROGA;
+  segundosRestantes = SEGUNDOS_PRORROGA;
   emitir("prorroga-inicio", { segundos: segundosRestantes });
 
   // Si el último fallo se resuelve a tiempo, cierra el día al instante.
@@ -73,6 +74,11 @@ export function cierreAutomaticoJornada() {
     }
   });
 
+  arrancarProrroga();
+}
+
+function arrancarProrroga() {
+  clearInterval(intervaloProrroga);
   intervaloProrroga = setInterval(() => {
     segundosRestantes--;
     if (segundosRestantes <= 0) {
@@ -83,10 +89,20 @@ export function cierreAutomaticoJornada() {
   }, 1000);
 }
 
+export function pausarProrroga() {
+  clearInterval(intervaloProrroga);
+  intervaloProrroga = null;
+}
+
+export function reanudarProrroga() {
+  if (enProrrogaEmergencia && !misionTerminada) arrancarProrroga();
+}
+
 // Guarda el día que termina y avanza: diaActual = diaActual.siguiente.
 export function ejecutarTransicionNodo() {
   if (misionTerminada) return;
   const diaAnterior = diaActual;
+  emitir("dia-terminado", { dia: diaAnterior.numeroDia, electricidad: estado.electricidad });
   SECTORES.forEach((s) => { diaAnterior[s] = estado[s]; });
   diaAnterior.electricidad = estado.electricidad;
 
@@ -100,6 +116,8 @@ export function ejecutarTransicionNodo() {
   // Regla de persistencia: electricidad al máximo, el resto hereda.
   diaActual.electricidad = 100;
   SECTORES.forEach((s) => { diaActual[s] = diaAnterior[s]; });
+  // Si hubo apagón, la batería nueva vuelve a encender los sectores.
+  if (estado.electricidad <= 0) SECTORES.forEach((s) => { estado.interruptores[s] = true; });
   estado.electricidad = 100;
 
   emitir("dia-cambio", { dia: diaActual.numeroDia });

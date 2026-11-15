@@ -1,4 +1,7 @@
-// Cabina (P2): reloj, barra de energía, porcentajes, gráficas, fallos e interruptores.
+// Cabina (P2): reloj, barra de energía, porcentajes, gráficas, fallos, prioridades e interruptores.
+import { segundosParaCritico, consumoSector } from "../core/energia.js";
+import { getSegundosPorHora } from "../core/reloj.js";
+import { infoDia } from "../core/eventos.js";
 const SECTORES = ["agua", "comida", "oxigeno", "radiacion"];
 const $ = (id) => document.getElementById(id);
 
@@ -40,16 +43,31 @@ export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
   }
   const relojDia = $("reloj-dia");
   if (relojDia) relojDia.textContent = `DÍA ${dia}`;
+  const titulo = $("dia-titulo");
+  if (titulo) titulo.textContent = infoDia(dia).titulo.toUpperCase();
 
   const energia = Math.max(0, Math.min(100, Math.round(estado.electricidad)));
   const energiaTxt = $("energia-porcentaje");
   if (energiaTxt) energiaTxt.textContent = `${energia}%`;
   const energiaBarra = $("energia-barra");
-  if (energiaBarra) energiaBarra.style.height = `${energia}%`;
+  if (energiaBarra) {
+    energiaBarra.style.height = `${energia}%`;
+    energiaBarra.style.setProperty("--nivel", `${energia}%`); // en móvil la barra es horizontal
+  }
 
   const ahora = Date.now();
   const muestrear = ahora - ultimoMuestreo >= MS_ENTRE_MUESTRAS;
   if (muestrear) ultimoMuestreo = ahora;
+
+  // Tiempo restante de cada sector y cuál es la prioridad (el que se hunde primero).
+  const tiempos = {};
+  let prioritario = null;
+  SECTORES.forEach((sector) => {
+    const t = segundosParaCritico(sector);
+    tiempos[sector] = t;
+    if (Number.isFinite(t) && t <= 60 && (prioritario === null || t < tiempos[prioritario])) prioritario = sector;
+  });
+  const sPorSeg = 1 / getSegundosPorHora();
 
   SECTORES.forEach((sector) => {
     const valor = Math.max(0, Math.min(100, Math.round(estado[sector])));
@@ -57,7 +75,20 @@ export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
     if (valTxt) valTxt.textContent = `${valor}%`;
 
     const tarjeta = document.querySelector(`.sector-unit[data-sector="${sector}"]`);
-    if (tarjeta) tarjeta.classList.toggle("en-fallo", estado.fallos.includes(sector));
+    if (tarjeta) {
+      tarjeta.classList.toggle("en-fallo", estado.fallos.includes(sector));
+      tarjeta.classList.toggle("prioridad", sector === prioritario);
+      tarjeta.classList.toggle("urgente", Number.isFinite(tiempos[sector]) && tiempos[sector] < 20);
+    }
+    const tm = $(`tm-${sector}`);
+    if (tm) {
+      const t = tiempos[sector];
+      tm.textContent = Number.isFinite(t)
+        ? `${sector === prioritario ? "🔥 PRIORIDAD · " : ""}⏱ ${Math.ceil(t)} s`
+        : "\u00a0";
+    }
+    const co = $(`co-${sector}`);
+    if (co) co.textContent = estado.interruptores[sector] ? `⚡ −${(consumoSector(sector) * sPorSeg).toFixed(1)}%/s` : "sin consumo";
 
     // Interruptor: refleja estado.interruptores (por ejemplo tras un apagón o al reiniciar).
     const encendido = estado.interruptores[sector];
@@ -112,4 +143,17 @@ function dibujarGrafica(canvasId, datos, color) {
   ctx.closePath();
   ctx.fillStyle = `${color}33`;
   ctx.fill();
+}
+
+
+// Mensaje flotante breve (logros, avisos). No bloquea el juego.
+export function mostrarToast(texto, clase = "") {
+  const zona = $("toasts");
+  if (!zona) return;
+  const t = document.createElement("div");
+  t.className = `toast ${clase}`;
+  t.textContent = texto;
+  zona.appendChild(t);
+  setTimeout(() => t.classList.add("salir"), 3200);
+  setTimeout(() => t.remove(), 3700);
 }

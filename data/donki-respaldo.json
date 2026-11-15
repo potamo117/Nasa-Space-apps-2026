@@ -1,0 +1,13 @@
+{
+  "_nota": "Respaldo local con la forma de las respuestas de NASA DONKI (api.nasa.gov/DONKI). Datos de ejemplo para cuando falle el fetch.",
+  "FLR": [
+    { "flrID": "2024-05-14T16:46:00-FLR-001", "beginTime": "2024-05-14T16:46Z", "peakTime": "2024-05-14T17:03Z", "endTime": "2024-05-14T17:15Z", "classType": "X8.7", "sourceLocation": "S18W37", "activeRegionNum": 13664 },
+    { "flrID": "2024-05-11T01:10:00-FLR-001", "beginTime": "2024-05-11T01:10Z", "peakTime": "2024-05-11T01:23Z", "endTime": "2024-05-11T01:31Z", "classType": "X5.8", "sourceLocation": "S19E43", "activeRegionNum": 13664 },
+    { "flrID": "2024-05-09T17:23:00-FLR-001", "beginTime": "2024-05-09T17:23Z", "peakTime": "2024-05-09T17:44Z", "endTime": "2024-05-09T18:02Z", "classType": "M3.2", "sourceLocation": "S17E10", "activeRegionNum": 13664 }
+  ],
+  "CME": [
+    { "activityID": "2024-05-14T17:00:00-CME-001", "startTime": "2024-05-14T17:00Z", "sourceLocation": "S18W37", "speed": 1200, "type": "S", "halfAngle": 60 },
+    { "activityID": "2024-05-11T01:25:00-CME-001", "startTime": "2024-05-11T01:25Z", "sourceLocation": "S19E43", "speed": 1500, "type": "C", "halfAngle": 70 },
+    { "activityID": "2024-05-09T17:36:00-CME-001", "startTime": "2024-05-09T17:36Z", "sourceLocation": "S17E10", "speed": 900, "type": "S", "halfAngle": 50 }
+  ]
+}
