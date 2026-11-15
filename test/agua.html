@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base Lunar Artemis — Sistema Hídrico ECLSS</title>
+  <!-- Rutas ajustadas a la estructura: test/agua.html -> ../css/agua.css -->
+  <link rel="stylesheet" href="../css/agua.css">
+</head>
+<body>
+  <!-- Fondo espacial idéntico al cockpit principal -->
+  <div class="space-backdrop" aria-hidden="true">
+    <div class="stars"></div>
+    <div class="moon-horizon"></div>
+  </div>
+
+  <main class="cockpit-shell" aria-label="Consola de control del sistema de agua">
+
+    <!-- Barra Superior estilo Base Lunar Artemis -->
+    <header class="cockpit-topbar">
+      <div class="topbar-brand">
+        <span class="material-icon" style="color:#29b6f6;" aria-hidden="true">water_drop</span>
+        <h1 class="brand-title">BASE LUNAR ARTEMIS - CIRCUITO DE AGUA</h1>
+        <div class="status-leds" aria-hidden="true">
+          <span class="led-square-mini led-g"></span>
+          <span class="led-square-mini led-b"></span>
+          <span class="led-square-mini led-a"></span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button type="button" class="artemis-btn artemis-btn--slate" id="btn-sonido" aria-label="Activar o desactivar sonido">
+          <span class="material-icon" aria-hidden="true">volume_up</span>
+          <span class="btn-label">Audio</span>
+        </button>
+        <button type="button" class="artemis-btn artemis-btn--agua" id="btn-nuevo-circuito">
+          <span class="material-icon" aria-hidden="true">refresh</span>
+          <span>Nuevo Circuito</span>
+        </button>
+        <button type="button" class="artemis-btn artemis-btn--comida" id="btn-verificar">
+          <span class="material-icon" aria-hidden="true">check_circle</span>
+          <span>Verificar</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Sección Central: Monitor de Tuberías + Medidor Vertical -->
+    <div class="cockpit-main">
+
+      <!-- Monitor Central Biselado -->
+      <section class="monitor-bezel" id="monitor-bezel">
+        <div class="monitor-screen">
+          <div class="monitor-header">
+            <h2 class="monitor-title">MONITOR DE RECICLAJE HÍDRICO (ECLSS)</h2>
+            <p class="monitor-status" id="monitor-status" role="status" aria-live="polite">
+              Gira las válvulas para conectar el Tanque de Condensación con el Filtro de Carbón.
+            </p>
+          </div>
+
+          <div class="board-stage">
+            <!-- Nodo Inicial (0,0) -->
+            <div class="node-terminal node-start">
+              <div class="node-badge">
+                <span class="material-icon" aria-hidden="true">water_damage</span>
+              </div>
+              <span class="node-label">TANQUE SUDOR</span>
+              <span class="node-coord">NODO (0,0)</span>
+            </div>
+
+            <!-- Cuadrícula 5x5 del Grafo de Adyacencia -->
+            <div class="pipe-grid" id="pipe-grid" role="grid" aria-label="Tablero de tuberías 5 por 5"></div>
+
+            <!-- Nodo Final (4,4) -->
+            <div class="node-terminal node-end">
+              <div class="node-badge">
+                <span class="material-icon" aria-hidden="true">filter_alt</span>
+              </div>
+              <span class="node-label">FILTRO CARBÓN</span>
+              <span class="node-coord">META (4,4)</span>
+            </div>
+
+            <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Medidor Lateral Derecho estilo "ENERGÍA TOTAL" -->
+      <aside class="side-gauge-panel" aria-label="Medidor de contaminación">
+        <div class="gauge-readout-box is-safe" id="gauge-val">0%</div>
+        <div class="gauge-segments" id="gauge-segments" aria-hidden="true"></div>
+        <div class="gauge-footer">
+          <span class="material-icon" aria-hidden="true">warning</span>
+          <span class="gauge-title">RIESGO<br>TOXINAS</span>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Consola Inferior de 3 Módulos con LEDs -->
+    <section class="cockpit-bottom-deck" aria-label="Telemetría del grafo">
+      <div class="module-card">
+        <div class="module-header mod-agua">
+          <span>💧 FLUJO BFS</span>
+          <span id="readout-nodes">0/25 NODOS</span>
+        </div>
+        <div class="module-visor visor-agua">
+          <span class="visor-val" id="readout-flow">0%</span>
+          <span class="visor-sub">ALCANCE</span>
+        </div>
+        <div class="led-indicator-box">
+          <span class="square-led" aria-hidden="true"></span>
+          <span class="led-text">GRAFO ACTIVO</span>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-header mod-comida">
+          <span>🧪 PUREZA CARBÓN</span>
+          <span>META 98%</span>
+        </div>
+        <div class="module-visor visor-comida">
+          <span class="visor-val" id="readout-filter">EN ESPERA</span>
+          <span class="visor-sub">ESTADO</span>
+        </div>
+        <div class="led-indicator-box">
+          <span class="square-led" aria-hidden="true"></span>
+          <span class="led-text">CONECTADO</span>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="module-header mod-radiacion">
+          <span>⚙️ VÁLVULAS</span>
+          <span>5×5 GRID</span>
+        </div>
+        <div class="module-visor visor-radiacion">
+          <span class="visor-val" id="readout-moves">0</span>
+          <span class="visor-sub">GIROS 90°</span>
+        </div>
+        <div class="led-indicator-box">
+          <span class="square-led" aria-hidden="true"></span>
+          <span class="led-text">OPERATIVO</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ruta ajustada a la estructura: test/agua.html -> ../js/minijuegos/agua.js -->
+  <script src="../js/minijuegos/agua.js"></script>
+</body>
+</html>
