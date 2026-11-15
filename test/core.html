@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Test del core (P1)</title>
+  <style>
+    body { font: 14px monospace; background: #0b1020; color: #cfe8ff; padding: 16px; }
+    button { margin: 2px; padding: 6px 10px; cursor: pointer; }
+    pre { background: #000; padding: 10px; border-radius: 6px; }
+    #log { max-height: 220px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h2>Test del core (P1)</h2>
+  <p>Usa <code>?rapido</code> en la URL para 2 s por hora de juego (el día dura ~28 s).</p>
+  <div id="controles"></div>
+  <pre id="debug-cockpit"></pre>
+  <pre id="log"></pre>
+
+  <script>window.NO_AUTOSTART = true;</script>
+  <script type="module">
+    import { iniciarJuego, dispararEvento } from "../js/main.js";
+    import { estado, SECTORES } from "../js/core/estado.js";
+    import { eventoAleatorio } from "../js/core/eventos.js";
+    import { emitir, escuchar } from "../js/core/bus.js";
+
+    const segundosPorHora = new URLSearchParams(location.search).has("rapido") ? 2 : 30;
+    const ctl = document.getElementById("controles");
+    const log = document.getElementById("log");
+
+    function boton(texto, fn) {
+      const b = document.createElement("button");
+      b.textContent = texto;
+      b.onclick = fn;
+      ctl.appendChild(b);
+    }
+
+    boton("▶ Iniciar / reiniciar", () => { log.textContent = ""; iniciarJuego({ segundosPorHora }); });
+    boton("Evento aleatorio", () => dispararEvento(eventoAleatorio(1)));
+    ctl.appendChild(document.createElement("br"));
+    SECTORES.forEach((s) => {
+      boton(`Interruptor ${s}`, () => { estado.interruptores[s] = !estado.interruptores[s]; });
+      boton(`Falla en ${s}`, () => dispararEvento({ nombre: `Falla de prueba (${s})`, causa: "Prueba manual", sectores: [s], minijuegos: [s] }));
+      boton(`Ganar minijuego ${s}`, () => emitir("minijuego-terminado", { sector: s, exito: true }));
+      ctl.appendChild(document.createElement("br"));
+    });
+
+    ["dia-cambio", "evento-inicio", "fallos-cambio", "prorroga-inicio", "prorroga-tick", "apagon", "victoria", "derrota"]
+      .forEach((n) => escuchar(n, (d) => {
+        log.textContent += `${new Date().toLocaleTimeString()}  ${n}  ${JSON.stringify(d)}\n`;
+        log.scrollTop = log.scrollHeight;
+      }));
+
+    iniciarJuego({ segundosPorHora });
+  </script>
+</body>
+</html>
