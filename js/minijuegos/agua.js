@@ -1,3 +1,4 @@
+import "../ui/iconos.js";
 import { nivelDe } from '../core/dificultad.js';
 /**
  * Minijuego P3 - Agua (Circuito ECLSS - Base Lunar Artemis)
@@ -199,7 +200,7 @@ import { nivelDe } from '../core/dificultad.js';
           const muted = this.sonido.toggleMute();
           const icon = this.btnSonido.querySelector('.material-icon');
           const label = this.btnSonido.querySelector('.btn-label');
-          if (icon) icon.textContent = muted ? 'volume_off' : 'volume_up';
+          if (icon) icon.textContent = muted ? '🔇' : '🔊';
           if (label) label.textContent = muted ? 'Sin Audio' : 'Audio';
         });
       }
@@ -727,18 +728,18 @@ export function iniciar(contenedor, onTerminar) {
     <div class="cockpit-shell" aria-label="Consola del sistema de agua">
       <header class="cockpit-topbar">
         <div class="topbar-brand">
-          <span class="material-icon" style="color:#29b6f6;" aria-hidden="true">water_drop</span>
+          <span class="material-icon" style="color:#29b6f6;" aria-hidden="true">💧</span>
           <h1 class="brand-title">CIRCUITO DE AGUA</h1>
         </div>
         <div class="topbar-actions">
           <button type="button" class="artemis-btn artemis-btn--slate" id="btn-sonido">
-            <span class="material-icon" aria-hidden="true">volume_up</span><span class="btn-label">Audio</span>
+            <span class="material-icon" aria-hidden="true">🔊</span><span class="btn-label">Audio</span>
           </button>
           <button type="button" class="artemis-btn artemis-btn--agua" id="btn-nuevo-circuito">
-            <span class="material-icon" aria-hidden="true">refresh</span><span>Nuevo Circuito</span>
+            <span class="material-icon" aria-hidden="true">🔄</span><span>Nuevo Circuito</span>
           </button>
           <button type="button" class="artemis-btn artemis-btn--comida" id="btn-verificar">
-            <span class="material-icon" aria-hidden="true">check_circle</span><span>Verificar</span>
+            <span class="material-icon" aria-hidden="true">✅</span><span>Verificar</span>
           </button>
         </div>
       </header>
@@ -753,12 +754,12 @@ export function iniciar(contenedor, onTerminar) {
             </div>
             <div class="board-stage">
               <div class="node-terminal node-start">
-                <div class="node-badge"><span class="material-icon" aria-hidden="true">water_damage</span></div>
+                <div class="node-badge"><span class="material-icon" aria-hidden="true">🚰</span></div>
                 <span class="node-label">TANQUE SUDOR</span><span class="node-coord">NODO (0,0)</span>
               </div>
               <div class="pipe-grid" id="pipe-grid" role="grid" aria-label="Tablero de tuberías 5 por 5"></div>
               <div class="node-terminal node-end">
-                <div class="node-badge"><span class="material-icon" aria-hidden="true">filter_alt</span></div>
+                <div class="node-badge"><span class="material-icon" aria-hidden="true">🧪</span></div>
                 <span class="node-label">FILTRO CARBÓN</span><span class="node-coord">META (4,4)</span>
               </div>
               <canvas class="confetti-canvas" id="confetti-canvas"></canvas>
@@ -768,7 +769,7 @@ export function iniciar(contenedor, onTerminar) {
         <aside class="side-gauge-panel" aria-label="Medidor de contaminación">
           <div class="gauge-readout-box is-safe" id="gauge-val">0%</div>
           <div class="gauge-segments" id="gauge-segments" aria-hidden="true"></div>
-          <div class="gauge-footer"><span class="material-icon" aria-hidden="true">warning</span>
+          <div class="gauge-footer"><span class="material-icon" aria-hidden="true">⚠️</span>
             <span class="gauge-title">RIESGO<br>TOXINAS</span></div>
         </aside>
       </div>

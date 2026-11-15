@@ -1,0 +1,11 @@
+/* Tipografías alojadas en el propio proyecto (SIL Open Font License 1.1). Ver recursos/CREDITOS.md */
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 400; font-display: swap; src: url('../recursos/fuentes/fredoka-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500; font-display: swap; src: url('../recursos/fuentes/fredoka-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 600; font-display: swap; src: url('../recursos/fuentes/fredoka-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 700; font-display: swap; src: url('../recursos/fuentes/fredoka-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Orbitron'; font-style: normal; font-weight: 600; font-display: swap; src: url('../recursos/fuentes/orbitron-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Orbitron'; font-style: normal; font-weight: 700; font-display: swap; src: url('../recursos/fuentes/orbitron-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Orbitron'; font-style: normal; font-weight: 800; font-display: swap; src: url('../recursos/fuentes/orbitron-latin-800-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Orbitron'; font-style: normal; font-weight: 900; font-display: swap; src: url('../recursos/fuentes/orbitron-latin-900-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Chakra Petch'; font-style: normal; font-weight: 600; font-display: swap; src: url('../recursos/fuentes/chakra-petch-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Chakra Petch'; font-style: normal; font-weight: 700; font-display: swap; src: url('../recursos/fuentes/chakra-petch-latin-700-normal.woff2') format('woff2'); }

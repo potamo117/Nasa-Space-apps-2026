@@ -1,3 +1,4 @@
+import "../ui/iconos.js";
 import { nivelDe } from "../core/dificultad.js";
 import { eventoSolarDestacado, textoDonki } from "../core/donki.js";
 
