@@ -18,6 +18,7 @@ import { abrirModal, cerrarModal } from "./ui/modal.js";
 import {
   mostrarPantallaBienvenida, mostrarPantallaFin, mostrarPausa, cerrarPausa, mostrarResumenDia,
 } from "./ui/pantallas.js";
+import { iniciarCookies } from "./ui/cookies.js";
 import { engancharAudio, desbloquearAudio, alternarSonido, sonidoActivo, sonido } from "./ui/audio.js";
 
 // ===== AJUSTES DE EVENTOS ALEATORIOS =====
@@ -25,7 +26,7 @@ import { engancharAudio, desbloquearAudio, alternarSonido, sonidoActivo, sonido 
 const HORA_PRIMER_EVENTO = 7;
 const HORA_ULTIMO_EVENTO = 18;
 const MAX_FALLAS_SIMULTANEAS = 3;   // no se programan más eventos aleatorios si ya hay tantos activos
-const ELECCION_SEGUNDOS = 8;        // tiempo para decidir en un evento con elección
+const ELECCION_SEGUNDOS = 12;       // tiempo para decidir en un evento con elección
 const COSTO_PARCHE = 15;            // % de energía que cuesta el parche rápido
 const DEMORA_SOLAPE_MS = 3500;      // un segundo evento "se solapa" poco después del primero
 
@@ -366,4 +367,7 @@ window.addEventListener("juego-iniciar", () => iniciarJuego());
 
 // Arranque: pantalla de bienvenida (dificultad + tutorial) y, al pulsar "Iniciar misión", empieza el juego.
 // (test/core.html pone window.NO_AUTOSTART = true para controlar el arranque a mano.)
-if (!window.NO_AUTOSTART) mostrarPantallaBienvenida((dif) => iniciarJuego({ perfil: dif }));
+if (!window.NO_AUTOSTART) {
+  iniciarCookies();   // aviso de cookies (bloquea hasta que se elige)
+  mostrarPantallaBienvenida((dif) => iniciarJuego({ perfil: dif }));
+}

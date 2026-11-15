@@ -177,14 +177,29 @@ El proyecto se publica en **Vercel** conectando el repositorio (Framework Preset
 
 Inspirada en FTL, Oxygen Not Included, Overcooked, Reigns y Slay the Spire.
 
-- **Alertas previas:** cada evento avisa unos segundos antes (4–8 s según dificultad).
-- **Eventos con elección:** *parche rápido* (−15 % de energía, evita la falla) o *reparación a fondo* (la falla ocurre, pero reparar da +13 extra). Si no decides en 8 s, la falla ocurre sin bonus.
+- **Alertas previas:** cada evento avisa unos segundos antes (6–10 s según dificultad).
+- **Eventos con elección:** *parche rápido* (−15 % de energía, evita la falla) o *reparación a fondo* (la falla ocurre, pero reparar da +13 extra). Si no decides en 12 s, la falla ocurre sin bonus.
 - **Solapamiento y prioridad:** en días avanzados dos eventos pueden llegar casi juntos. Cada sector muestra su tiempo restante (⏱) y el más urgente se marca como PRIORIDAD.
 - **Energía con decisiones:** cada sector cuesta distinto (oxígeno y escudos más caros) y se degrada distinto al apagarlo. Los escudos encendidos frenan a la mitad las fallas de radiación.
 - **Un día = una identidad:** Día 1 adaptación, 2 normal, 3 tormenta solar, 4 impactos en cadena, 5 CME masiva (ver `DIAS` en `js/core/eventos.js`).
 - **Resumen de día:** estrellas, puntos, pronóstico del siguiente día y elección de 1 mejora entre 3 (`MEJORAS` en `js/core/progreso.js`).
-- **Logros y puntuación:** 8 logros y mejor puntuación guardados en `localStorage`.
+- **Logros y puntuación:** 8 logros y mejor puntuación guardados en `localStorage` (solo si se aceptan las cookies funcionales).
 - **Dificultad:** Fácil / Normal / Difícil (`js/core/dificultad.js`) y minijuegos con **dificultad adaptativa** por sector (ganas rápido: sube; fallas o tardas: baja).
 - **Pausa y tutorial:** botón ⏸, pausa automática al ocultar la pestaña, tutorial de 3 pantallas la primera vez.
 - **Sonido y vibración:** sonidos sintetizados (Web Audio) y vibración en móvil; botón 🔊 para silenciar.
 - **NASA DONKI:** `js/core/donki.js` pide fulguraciones y CME de los últimos 30 días (`DEMO_KEY`) y usa `data/donki-respaldo.json` si falla la red. La fulguración más fuerte fija el riesgo del minijuego de radiación y se muestra en los eventos solares.
+
+
+## Balance para niños de 7–12 años (v4)
+
+- Reloj: 12 / 10 / 8 s por hora (Fácil / Normal / Difícil); el consumo de recursos es más lento y las fallas dan más margen.
+- Normal arranca con minijuegos en nivel fácil y sube solo si el jugador gana rápido.
+- Sliders de los minijuegos: ya no hay "imán" que salte valores; cada número es alcanzable.
+- Agua (tuberías): camino más corto, menos piezas desordenadas y contaminación más lenta.
+
+## Cookies, términos y privacidad
+
+- `privacidad.html` y `terminos.html` (con `css/legal.css`, `js/legal-pagina.js`).
+- Aviso de cookies al primer acceso (`js/ui/cookies.js`): *necesarias* (siempre) y *funcionales* (guardan dificultad, sonido, puntuación y logros). Sin aceptar funcionales, nada se guarda en el navegador (`js/core/almacen.js`).
+- Se pueden cambiar o borrar desde el menú de pausa / pantalla de bienvenida ("Cookies").
+- **Antes de publicar:** edita `js/legal-config.js` (correo de contacto, responsable, fecha). Los textos son una base y conviene que los revise una persona con conocimiento legal.

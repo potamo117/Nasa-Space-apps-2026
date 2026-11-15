@@ -213,7 +213,7 @@ export function iniciar(contenedor, onTerminar) {
 
               <div class="ox-font-orbitron ox-slider-scale">
                 <span>${CFG.VOLT_BASE} V</span>
-                <span style="color:#34d399;">🧲 SE IMANTA A LA ZONA VERDE</span>
+                <span style="color:#34d399;">🎯 META ±1 V ES ZONA VERDE</span>
                 <span>${CFG.VOLT_MAX} V</span>
               </div>
             </div>
@@ -458,7 +458,7 @@ export function iniciar(contenedor, onTerminar) {
     if (game.finished) return;
     let val = parseInt(rawVal, 10);
     if (Number.isNaN(val)) return;
-    if (Math.abs(val - game.targetVolt) === 1) val = game.targetVolt; // efecto imán
+    // Sin efecto imán: cada voltaje (1, 2, 3...) se puede alcanzar. La zona verde ya es meta ±1.
     setVolt(val);
   }
 

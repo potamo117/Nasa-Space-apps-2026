@@ -291,9 +291,6 @@ export function iniciar(contenedor, onTerminar) {
   function onRedSlider(rawVal) {
     if (game.roundWon) return;
     let val = parseInt(rawVal, 10);
-    if (Math.abs(val - game.targetRed) === 1) {
-      val = game.targetRed;
-    }
     game.redVal = val;
     syncSpectrumUI();
   }
@@ -301,9 +298,6 @@ export function iniciar(contenedor, onTerminar) {
   function onBlueSlider(rawVal) {
     if (game.roundWon) return;
     let val = parseInt(rawVal, 10);
-    if (Math.abs(val - game.targetBlue) === 1) {
-      val = game.targetBlue;
-    }
     game.blueVal = val;
     syncSpectrumUI();
   }
