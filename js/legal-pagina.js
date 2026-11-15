@@ -1,3 +1,4 @@
+import "./ui/iconos.js";
 // Rellena los datos del responsable (js/legal-config.js) y conecta el botón de cookies en las páginas legales.
 import { LEGAL } from "./legal-config.js";
 import { abrirPreferenciasCookies } from "./ui/cookies.js";

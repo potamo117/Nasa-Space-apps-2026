@@ -1,3 +1,4 @@
+import "./ui/iconos.js";
 import { estado, reiniciarEstado } from "./core/estado.js";
 import { emitir, escuchar } from "./core/bus.js";
 import { crearLista, pausarProrroga, reanudarProrroga } from "./core/listaEnlazada.js";

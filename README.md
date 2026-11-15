@@ -203,3 +203,11 @@ Inspirada en FTL, Oxygen Not Included, Overcooked, Reigns y Slay the Spire.
 - Aviso de cookies al primer acceso (`js/ui/cookies.js`): *necesarias* (siempre) y *funcionales* (guardan dificultad, sonido, puntuación y logros). Sin aceptar funcionales, nada se guarda en el navegador (`js/core/almacen.js`).
 - Se pueden cambiar o borrar desde el menú de pausa / pantalla de bienvenida ("Cookies").
 - **Antes de publicar:** edita `js/legal-config.js` (correo de contacto, responsable, fecha). Los textos son una base y conviene que los revise una persona con conocimiento legal.
+
+## Recursos propios (v5)
+
+- El juego ya no usa los emojis del sistema ni descarga íconos o tipografías de Google: todo está en `recursos/`.
+- `recursos/iconos/`: 76 íconos SVG (Fluent Emoji de Microsoft, licencia MIT). `js/ui/iconos.js` relaciona cada símbolo con su archivo y lo dibuja como imagen, así se ve igual en cualquier dispositivo.
+- `recursos/fuentes/` + `css/fuentes.css`: Fredoka, Orbitron y Chakra Petch (SIL Open Font License 1.1).
+- `recursos/CREDITOS.md` y `recursos/licencias/`: créditos y textos de licencia (hay que conservarlos al redistribuir).
+- La única conexión externa que queda es la API DONKI de la NASA.

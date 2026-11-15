@@ -1,3 +1,4 @@
+import "../ui/iconos.js";
 import { nivelDe } from "../core/dificultad.js";
 // js/minijuegos/oxigeno.js  (P4) — Fábrica de Oxígeno (electrólisis del agua)
 //
@@ -1016,7 +1017,7 @@ export function iniciar(contenedor, onTerminar) {
       floatingScores.push({
         x: p.x,
         y: p.y,
-        text: isGold ? `+${gain}% O₂ ⭐` : `+${gain}% O₂`,
+        text: isGold ? `+${gain}% O₂ ★` : `+${gain}% O₂`,
         color: isGold ? "#fde047" : "#67e8f9",
         life: 0.6
       });

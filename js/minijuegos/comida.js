@@ -1,3 +1,6 @@
+import { imagenIcono } from "../ui/iconos.js";
+const IMG_FRESA = imagenIcono("🍓");
+const IMG_TOMATE = imagenIcono("🍅");
 import { nivelDe } from "../core/dificultad.js";
 export function iniciar(contenedor, onTerminar) {
   let destruido = false;
@@ -592,10 +595,8 @@ export function iniciar(contenedor, onTerminar) {
       ctx.arc(0, 0, f.r + 5, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.font = "28px Fredoka, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(f.type === "strawberry" ? "🍓" : "🍅", 0, 1);
+      const imgFruta = f.type === "strawberry" ? IMG_FRESA : IMG_TOMATE;
+      if (imgFruta.complete && imgFruta.naturalWidth) ctx.drawImage(imgFruta, -15, -15, 30, 30);
       ctx.restore();
     });
 
@@ -704,7 +705,7 @@ export function iniciar(contenedor, onTerminar) {
         floatingTexts.push({
           x: f.x,
           y: f.y,
-          text: isGolden ? `+${gain}% 🍓` : `+${gain}% 🍅`,
+          text: `+${gain}%`,
           color: isGolden ? "#fde047" : "#4ade80",
           life: 36
         });
