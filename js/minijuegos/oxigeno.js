@@ -1,18 +1,65 @@
+// js/minijuegos/oxigeno.js  (P4) — Fábrica de Oxígeno (electrólisis del agua)
+//
+// Contrato:  iniciar(contenedor, onTerminar)
+//   onTerminar({ exito: true })   -> tanque de O2 al 100%
+//   onTerminar({ exito: false })  -> el reactor se sobrecalentó (calor al 100%)
+//
+// Extra (opcional para P2): iniciar() devuelve una función destruir().
+// Llámala si cierras el modal sin que el juego haya terminado: detiene todo
+// y NO llama a onTerminar. Si no la llamas, el juego se limpia solo cuando
+// su HTML sale del DOM o cuando vuelves a llamar a iniciar() en el mismo contenedor.
+
+// ---------------------------------------------------------------- AJUSTES
+const CFG = {
+  VOLT_BASE: 1,                 // voltaje con todos los cristales apagados
+  CRISTALES: [1, 2, 4],         // binario: cualquier voltaje de 1 a 8 tiene una combinación exacta
+  VOLT_MAX: 8,                  // VOLT_BASE + 1 + 2 + 4
+  METAS: [3, 4, 5, 6],          // voltaje meta posible (zona verde = meta ± 1)
+
+  RELLENO_PASIVO: 3.5,          // % de tanque por segundo solo por estar en zona verde
+  BURBUJAS_O2_POR_S: 3.2,       // burbujas O2 tocables por segundo (en zona verde)
+  PROB_DORADA: 0.25,            // fracción de burbujas O2 que son doradas
+  BURBUJAS_H2_POR_S: 5,         // burbujas H2 decorativas por segundo
+  GANANCIA_BURBUJA: 6,          // % por burbuja O2
+  GANANCIA_DORADA: 14,          // % por burbuja dorada
+
+  // Calor (% por segundo) según cuánto te pasas de la meta: diff 2, diff 3, diff >= 4
+  CALOR_POR_S: [12, 18, 26],
+  ENFRIAMIENTO_PASIVO: 6,       // % por segundo cuando NO estás en sobrevoltaje
+  ENFRIAR_RESTA: 35,            // % de calor que quita el botón ENFRIAR
+  ENFRIAR_COOLDOWN: 2.5,        // segundos antes de poder volver a usar ENFRIAR
+  CALOR_ALERTA: 70,             // desde aquí el juego avisa de peligro
+
+  RETARDO_VICTORIA_MS: 2000,
+  RETARDO_DERROTA_MS: 1800
+};
+
+const instancias = new WeakMap(); // contenedor -> destruir() de la partida activa
+let ultimaMeta = null;            // para no repetir la misma meta dos veces seguidas
+
 export function iniciar(contenedor, onTerminar) {
-  // Cargar CSS automáticamente si se abre desde el index.html principal
-  if (!document.querySelector('link[href*="oxigeno.css"]')) {
+  // Si ya había una partida en este contenedor (modal reabierto), se destruye primero.
+  const previa = instancias.get(contenedor);
+  if (previa) previa();
+
+  // Cargar el CSS automáticamente (ruta relativa a ESTE archivo, no a la página).
+  const yaTieneCSS = [...document.querySelectorAll('link[rel="stylesheet"]')].some((l) =>
+    l.href.includes("oxigeno.css")
+  );
+  if (!yaTieneCSS) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./css/oxigeno.css";
+    link.href = new URL("../../css/oxigeno.css", import.meta.url).href;
     document.head.appendChild(link);
   }
 
-  // Voltaje meta aleatorio entre 3 V y 8 V (diferente al 2 V inicial)
-  const voltajesPosibles = [3, 4, 5, 6, 7, 8];
-  const voltajeMetaInicial =
-    voltajesPosibles[Math.floor(Math.random() * voltajesPosibles.length)];
+  // Meta aleatoria, distinta a la anterior
+  const opciones = CFG.METAS.filter((m) => m !== ultimaMeta);
+  const metaInicial = opciones[Math.floor(Math.random() * opciones.length)];
+  ultimaMeta = metaInicial;
 
-  // Inyectar interfaz dentro del contenedor del modal
+  const [C1, C2, C3] = CFG.CRISTALES;
+
   contenedor.innerHTML = `
     <div class="ox-wrapper">
       <main data-el="chassis" class="ox-chassis-panel">
@@ -29,9 +76,9 @@ export function iniciar(contenedor, onTerminar) {
             <div class="ox-logo-box">🫧</div>
             <div>
               <div class="ox-title-row">
-                <h1 class="ox-font-orbitron ox-main-title">
+                <h2 class="ox-font-orbitron ox-main-title">
                   BASE LUNAR ARTEMIS · FÁBRICA DE OXÍGENO (O₂)
-                </h1>
+                </h2>
                 <div class="ox-leds">
                   <span class="ox-led ox-led-green"></span>
                   <span class="ox-led ox-led-sky"></span>
@@ -83,17 +130,17 @@ export function iniciar(contenedor, onTerminar) {
               <div class="ox-crt-screen ox-meter-box">
                 <div class="ox-font-orbitron ox-meter-label" style="color:#fcd34d;">🎯 VOLTAJE META</div>
                 <div data-el="targetVoltDisplay" class="ox-font-orbitron ox-meter-val ox-glow-amber">
-                  ${voltajeMetaInicial} V
+                  ${metaInicial} V
                 </div>
-                <div data-el="targetRangeSub" class="ox-meter-sub" style="color:#6ee7b7;">
-                  Zona verde: ${voltajeMetaInicial - 1} V – ${voltajeMetaInicial + 1} V
+                <div class="ox-meter-sub" style="color:#6ee7b7;">
+                  Zona verde: ${metaInicial - 1} V – ${metaInicial + 1} V
                 </div>
               </div>
 
               <div data-el="currentVoltCard" class="ox-crt-screen ox-meter-box is-cyan">
                 <div class="ox-font-orbitron ox-meter-label" style="color:#67e8f9;">⚡ TU ENERGÍA</div>
                 <div data-el="currentVoltDisplay" class="ox-font-orbitron ox-meter-val ox-glow-cyan">
-                  2 V
+                  ${CFG.VOLT_BASE} V
                 </div>
                 <div data-el="voltHelperBadge" class="ox-meter-sub" style="color:#fcd34d;">
                   ¡Ajusta el voltaje!
@@ -109,11 +156,13 @@ export function iniciar(contenedor, onTerminar) {
                 <span style="color:#d8b4fe;">🟣 LADO H₂ (HIDRÓGENO)</span>
               </div>
 
-              <canvas data-el="tankCanvas" class="ox-tank-canvas"></canvas>
+              <div data-el="tankStage" class="ox-tank-stage">
+                <canvas data-el="tankCanvas" class="ox-tank-canvas"></canvas>
+              </div>
 
               <div class="ox-tank-legend">
-                <span class="ox-legend-item"><span class="ox-dot-cyan"></span> Burbuja O₂ (+6%)</span>
-                <span class="ox-legend-item"><span class="ox-dot-gold"></span> <strong>Burbuja Dorada O₂ (+14%)</strong></span>
+                <span class="ox-legend-item"><span class="ox-dot-cyan"></span> Burbuja O₂ (+${CFG.GANANCIA_BURBUJA}%)</span>
+                <span class="ox-legend-item"><span class="ox-dot-gold"></span> <strong>Burbuja Dorada O₂ (+${CFG.GANANCIA_DORADA}%)</strong></span>
               </div>
             </div>
           </div>
@@ -123,24 +172,24 @@ export function iniciar(contenedor, onTerminar) {
             <!-- CRISTALES -->
             <div>
               <span class="ox-font-orbitron ox-section-label">
-                1️⃣ CRISTALES DE ENERGÍA (Base: 2 V)
+                1️⃣ CRISTALES DE ENERGÍA (Base: ${CFG.VOLT_BASE} V)
               </span>
               <div class="ox-crystals-grid">
                 <button type="button" data-crystal="0" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">💎</span>
-                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#67e8f9;">+1 V</span>
+                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#67e8f9;">+${C1} V</span>
                   <span class="ox-crystal-state">APAGADO</span>
                 </button>
 
                 <button type="button" data-crystal="1" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">🔋</span>
-                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#6ee7b7;">+2 V</span>
+                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#6ee7b7;">+${C2} V</span>
                   <span class="ox-crystal-state">APAGADO</span>
                 </button>
 
                 <button type="button" data-crystal="2" class="ox-juicy-btn ox-crystal-btn">
                   <span class="ox-crystal-emoji">⚡</span>
-                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#fcd34d;">+3 V</span>
+                  <span class="ox-font-orbitron ox-crystal-volt" style="color:#fcd34d;">+${C3} V</span>
                   <span class="ox-crystal-state">APAGADO</span>
                 </button>
               </div>
@@ -152,32 +201,31 @@ export function iniciar(contenedor, onTerminar) {
                 <span class="ox-font-orbitron" style="font-size:0.72rem;font-weight:700;color:#fcd34d;">
                   🧲 O DESLIZA LA PALANCA MAGNÉTICA
                 </span>
-                <span data-el="sliderVoltBadge" class="ox-font-orbitron ox-slider-badge">2 V</span>
+                <span data-el="sliderVoltBadge" class="ox-font-orbitron ox-slider-badge">${CFG.VOLT_BASE} V</span>
               </div>
 
-              <input data-el="voltageSlider" type="range" min="1" max="9" value="2" step="1" class="ox-kid-slider" />
+              <input data-el="voltageSlider" type="range" min="${CFG.VOLT_BASE}" max="${CFG.VOLT_MAX}" value="${CFG.VOLT_BASE}" step="1" class="ox-kid-slider" aria-label="Voltaje de la celda" />
 
               <div class="ox-font-orbitron ox-slider-scale">
-                <span>1 V</span>
+                <span>${CFG.VOLT_BASE} V</span>
                 <span style="color:#34d399;">🧲 SE IMANTA A LA ZONA VERDE</span>
-                <span>9 V</span>
+                <span>${CFG.VOLT_MAX} V</span>
               </div>
             </div>
 
             <!-- TEMPERATURA Y ENFRIAR -->
-            <div class="ox-dark-card ox-temp-row">
-              <div>
-                <div class="ox-font-orbitron" style="font-size:0.72rem;font-weight:700;color:#e2e8f0;">
-                  🌡️ TEMPERATURA DEL AGUA
+            <div class="ox-dark-card">
+              <div class="ox-temp-row">
+                <div>
+                  <div class="ox-font-orbitron ox-temp-title">🌡️ TEMPERATURA DEL REACTOR</div>
+                  <div data-el="tempFriendlyText" class="ox-temp-text">❄️ Fresquita y segura</div>
                 </div>
-                <div data-el="tempFriendlyText" style="font-size:0.82rem;font-weight:700;color:#34d399;margin-top:2px;">
-                  ❄️ Fresquita y segura
-                </div>
-              </div>
 
-              <button type="button" data-el="btnCool" class="ox-juicy-btn ox-font-orbitron ox-btn-cool">
-                <span>💦</span> ENFRIAR
-              </button>
+                <button type="button" data-el="btnCool" class="ox-juicy-btn ox-font-orbitron ox-btn-cool">
+                  <span>💦</span> <span data-el="coolLabel">ENFRIAR</span>
+                </button>
+              </div>
+              <div class="ox-heat-track"><div data-el="heatBar" class="ox-heat-fill"></div></div>
             </div>
 
             <!-- TANQUE DE OXÍGENO -->
@@ -202,11 +250,24 @@ export function iniciar(contenedor, onTerminar) {
         <div data-el="victoryOverlay" class="ox-victory-overlay is-hidden">
           <div class="ox-chassis-panel ox-victory-card">
             <div style="font-size:3.5rem;">🫧</div>
-            <h2 class="ox-font-orbitron ox-glow-green" style="margin:0;font-size:1.5rem;font-weight:900;">
+            <h3 class="ox-font-orbitron ox-glow-green" style="margin:0;font-size:1.5rem;font-weight:900;">
               ¡OXÍGENO RESTAURADO AL 100%!
-            </h2>
+            </h3>
             <p style="margin:0;font-size:0.92rem;color:#e2e8f0;line-height:1.45;">
-              ¡Excelente trabajo! Regulaste la celda de electrólisis a <strong>${voltajeMetaInicial} V</strong> y llenaste todo el tanque de oxígeno puro para la Base Lunar Artemis.
+              ¡Excelente trabajo! Regulaste la celda de electrólisis a <strong>${metaInicial} V</strong> y llenaste todo el tanque de oxígeno puro para la Base Lunar Artemis.
+            </p>
+          </div>
+        </div>
+
+        <!-- 5. OVERLAY DE DERROTA -->
+        <div data-el="defeatOverlay" class="ox-victory-overlay is-hidden">
+          <div class="ox-chassis-panel ox-victory-card is-defeat">
+            <div style="font-size:3.5rem;">🔥</div>
+            <h3 class="ox-font-orbitron ox-glow-rose" style="margin:0;font-size:1.5rem;font-weight:900;">
+              ¡REACTOR SOBRECALENTADO!
+            </h3>
+            <p style="margin:0;font-size:0.92rem;color:#e2e8f0;line-height:1.45;">
+              Demasiado voltaje durante demasiado tiempo: la celda de electrólisis se apagó por seguridad. La producción de oxígeno sigue detenida.
             </p>
           </div>
         </div>
@@ -214,154 +275,140 @@ export function iniciar(contenedor, onTerminar) {
     </div>
   `;
 
-  // Helper para buscar elementos dentro de este contenedor
+  // ------------------------------------------------------------- REFERENCIAS
   const q = (name) => contenedor.querySelector(`[data-el="${name}"]`);
   const chassis = q("chassis");
+  const tankStage = q("tankStage");
   const tankCanvas = q("tankCanvas");
   const confettiCanvas = q("confettiCanvas");
   const crystalBtns = contenedor.querySelectorAll("[data-crystal]");
+  const el = {
+    slider: q("voltageSlider"),
+    sliderBadge: q("sliderVoltBadge"),
+    voltDisplay: q("currentVoltDisplay"),
+    voltCard: q("currentVoltCard"),
+    helperBadge: q("voltHelperBadge"),
+    statusPill: q("statusPill"),
+    artyText: q("artyText"),
+    tempText: q("tempFriendlyText"),
+    heatBar: q("heatBar"),
+    btnCool: q("btnCool"),
+    coolLabel: q("coolLabel"),
+    progBar: q("oxygenProgressBar"),
+    progText: q("oxygenPercentText"),
+    victory: q("victoryOverlay"),
+    defeat: q("defeatOverlay")
+  };
+  const tankCtx = tankCanvas.getContext("2d");
+  const confettiCtx = confettiCanvas.getContext("2d");
 
-  // Motor de audio sintetizado
+  // ------------------------------------------------------------------ ESTADO
+  const game = {
+    targetVolt: metaInicial,
+    currentVolt: CFG.VOLT_BASE,
+    crystals: [false, false, false],
+    zona: "bajo",            // "bajo" | "verde" | "caliente"
+    oxygenProgress: 0,
+    heat: 0,                 // 0..100
+    coolCooldown: 0,         // segundos restantes
+    sparkTimer: 0,
+    finished: false,
+    destroyed: false
+  };
+  const view = { w: 0, h: 0, dpr: 1 };
+  const particles = [];
+  const floatingScores = [];
+  const confettiPieces = [];
+  let rafId = null;
+  let lastT = performance.now();
+  let endTimer = null;
+  let resizeObs = null;
+  let statusKey = "";
+  let tempKey = "";
+
+  // ------------------------------------------------------------------- AUDIO
+  // El AudioContext solo se crea tras un gesto del usuario (política de autoplay)
+  // y se cierra al destruir la partida.
   let audioCtx = null;
+  let audioArmed = false;
+  const armAudio = () => { audioArmed = true; };
+  chassis.addEventListener("pointerdown", armAudio, true);
+  chassis.addEventListener("keydown", armAudio, true);
+
   function getAudioCtx() {
+    if (!audioArmed || game.destroyed) return null;
     if (!audioCtx) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContextClass();
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      audioCtx = new AC();
     }
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
     return audioCtx;
+  }
+
+  function blip({ type = "sine", f0, f1 = f0, dur = 0.1, vol = 0.18, delay = 0 }) {
+    try {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const t = ctx.currentTime + delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(f0, t);
+      if (f1 !== f0) osc.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.9);
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + dur);
+    } catch (_) { /* el audio nunca debe romper el juego */ }
   }
 
   const sfx = {
     enabled: true,
     crystalTap(active) {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(active ? 520 : 310, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(active ? 780 : 220, ctx.currentTime + 0.09);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
-      } catch (_) {}
+      blip({ type: "triangle", f0: active ? 520 : 310, f1: active ? 780 : 220, dur: 0.1, vol: 0.18 });
     },
     greenZoneLock() {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        [523.25, 659.25, 783.99].forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = "sine";
-          const t = ctx.currentTime + idx * 0.06;
-          osc.frequency.setValueAtTime(freq, t);
-          gain.gain.setValueAtTime(0.16, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(t);
-          osc.stop(t + 0.18);
-        });
-      } catch (_) {}
+      [523.25, 659.25, 783.99].forEach((f, i) => blip({ f0: f, dur: 0.18, vol: 0.16, delay: i * 0.06 }));
     },
-    bubblePop(isGold = false) {
+    bubblePop(isGold) {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const freq = isGold ? 720 : 540;
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.6, ctx.currentTime + 0.11);
-        gain.gain.setValueAtTime(0.24, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.12);
-      } catch (_) {}
+      const f = isGold ? 720 : 540;
+      blip({ f0: f, f1: f * 1.6, dur: 0.12, vol: 0.24 });
     },
     softSpark() {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(160, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(95, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.13);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.13);
-      } catch (_) {}
+      blip({ type: "sawtooth", f0: 160, f1: 95, dur: 0.13, vol: 0.12 });
     },
     waterSplash() {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(340, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(620, ctx.currentTime + 0.18);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.2);
-      } catch (_) {}
+      blip({ f0: 340, f1: 620, dur: 0.2, vol: 0.18 });
     },
     victoryFanfare() {
       if (!this.enabled) return;
-      try {
-        const ctx = getAudioCtx();
-        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = "triangle";
-          const t = ctx.currentTime + i * 0.11;
-          osc.frequency.setValueAtTime(freq, t);
-          gain.gain.setValueAtTime(0.22, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(t);
-          osc.stop(t + 0.35);
-        });
-      } catch (_) {}
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+        blip({ type: "triangle", f0: f, dur: 0.35, vol: 0.22, delay: i * 0.11 })
+      );
+    },
+    defeatBuzz() {
+      if (!this.enabled) return;
+      [330, 262, 196].forEach((f, i) =>
+        blip({ type: "sawtooth", f0: f, f1: f * 0.9, dur: 0.28, vol: 0.14, delay: i * 0.16 })
+      );
     }
   };
 
-  // Estado del minijuego
-  const game = {
-    baseVolt: 2,
-    crystalValues: [1, 2, 3],
-    crystals: [false, false, false],
-    targetVolt: voltajeMetaInicial,
-    currentVolt: 2,
-    wasInGreenZone: false,
-    oxygenProgress: 0,
-    roundWon: false,
-    isHot: false
-  };
-
-  const particles = [];
-  const floatingScores = [];
-  const confettiPieces = [];
-  let sparkTick = 0;
-  let rafId = null;
-  let fillIntervalId = null;
+  // ------------------------------------------------------------------- LÓGICA
+  function calcZona() {
+    const diff = game.currentVolt - game.targetVolt;
+    if (diff >= 2) return "caliente";
+    if (diff <= -2) return "bajo";
+    return "verde";
+  }
 
   function shakeChassis() {
     chassis.classList.remove("ox-shake-effect");
@@ -378,124 +425,140 @@ export function iniciar(contenedor, onTerminar) {
     if (lbl) lbl.textContent = active ? "ENCENDIDO" : "APAGADO";
   }
 
+  // ÚNICA fuente de verdad del voltaje: los cristales. El slider y el display
+  // siempre se derivan de ellos, así nunca pueden contradecirse.
+  function setCristales(flags) {
+    game.crystals = flags;
+    let v = CFG.VOLT_BASE;
+    flags.forEach((on, i) => { if (on) v += CFG.CRISTALES[i]; });
+    game.currentVolt = v;
+    [0, 1, 2].forEach(updateCrystalVisual);
+    onVoltChanged();
+  }
+
+  function setVolt(v) {
+    const n = Math.max(CFG.VOLT_BASE, Math.min(CFG.VOLT_MAX, v)) - CFG.VOLT_BASE; // 0..7
+    setCristales([!!(n & 1), !!(n & 2), !!(n & 4)]);
+  }
+
   function toggleCrystal(index) {
-    if (game.roundWon) return;
-    game.crystals[index] = !game.crystals[index];
-    updateCrystalVisual(index);
-
-    let sum = game.baseVolt;
-    game.crystals.forEach((on, idx) => {
-      if (on) sum += game.crystalValues[idx];
-    });
-    game.currentVolt = Math.min(9, Math.max(1, sum));
-
-    sfx.crystalTap(game.crystals[index]);
-    syncSliderAndUI();
+    if (game.finished) return;
+    const flags = game.crystals.slice();
+    flags[index] = !flags[index];
+    sfx.crystalTap(flags[index]);
+    setCristales(flags);
   }
 
   function onSliderChange(rawVal) {
-    if (game.roundWon) return;
+    if (game.finished) return;
     let val = parseInt(rawVal, 10);
-
-    // Efecto imán suave
-    if (Math.abs(val - game.targetVolt) === 1) {
-      val = game.targetVolt;
-    }
-
-    game.currentVolt = val;
-
-    const needed = val - game.baseVolt;
-    const combos = {
-      0: [false, false, false],
-      1: [true, false, false],
-      2: [false, true, false],
-      3: [false, false, true],
-      4: [true, false, true],
-      5: [false, true, true],
-      6: [true, true, true],
-      7: [true, true, true]
-    };
-    game.crystals = combos[Math.max(0, Math.min(7, needed))] || [false, false, false];
-    [0, 1, 2].forEach(updateCrystalVisual);
-
-    syncSliderAndUI();
+    if (Number.isNaN(val)) return;
+    if (Math.abs(val - game.targetVolt) === 1) val = game.targetVolt; // efecto imán
+    setVolt(val);
   }
 
-  function syncSliderAndUI() {
-    const slider = q("voltageSlider");
-    const sliderBadge = q("sliderVoltBadge");
-    const voltDisplay = q("currentVoltDisplay");
-    const voltCard = q("currentVoltCard");
-    const helperBadge = q("voltHelperBadge");
-    const statusPill = q("statusPill");
-    const artyText = q("artyText");
-    const tempText = q("tempFriendlyText");
+  function onVoltChanged() {
+    const prevZona = game.zona;
+    game.zona = calcZona();
+
+    el.slider.value = game.currentVolt;
+    el.sliderBadge.textContent = `${game.currentVolt} V`;
+    el.voltDisplay.textContent = `${game.currentVolt} V`;
+
+    el.voltCard.classList.remove("is-cyan", "is-green", "is-hot");
+    if (game.zona === "verde") {
+      el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-green";
+      el.voltCard.classList.add("is-green");
+      el.helperBadge.textContent = "✅ ¡ZONA VERDE PERFECTA!";
+      el.helperBadge.style.color = "#6ee7b7";
+    } else if (game.zona === "bajo") {
+      el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-cyan";
+      el.voltCard.classList.add("is-cyan");
+      el.helperBadge.textContent = "⬆️ ¡Falta energía! Sube más";
+      el.helperBadge.style.color = "#fcd34d";
+    } else {
+      el.voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-rose";
+      el.voltCard.classList.add("is-hot");
+      el.helperBadge.textContent = "⬇️ ¡Mucha energía! Baja un poco";
+      el.helperBadge.style.color = "#fda4af";
+    }
+
+    if (prevZona !== game.zona) {
+      if (game.zona === "verde") sfx.greenZoneLock();
+      // Al salir de la zona verde, las burbujas que quedan en pantalla ya no valen nada.
+      if (prevZona === "verde") {
+        for (const p of particles) if (p.type === "goldO2" || p.type === "cyanO2") p.type = "dimO2";
+      }
+    }
+    renderStatus();
+  }
+
+  // Pastilla de estado + mensaje de Arty (solo se reescribe el DOM si algo cambió)
+  function renderStatus() {
+    const alerta = game.heat >= CFG.CALOR_ALERTA;
+    const key = game.zona + (alerta ? "!" : "");
+    if (key === statusKey) return;
+    statusKey = key;
 
     const minGreen = game.targetVolt - 1;
     const maxGreen = game.targetVolt + 1;
+    el.statusPill.classList.remove("is-green", "is-hot");
 
-    slider.value = game.currentVolt;
-    sliderBadge.textContent = `${game.currentVolt} V`;
-    voltDisplay.textContent = `${game.currentVolt} V`;
-
-    const diff = game.currentVolt - game.targetVolt;
-    const inGreenZone = Math.abs(diff) <= 1;
-    game.isHot = diff >= 2;
-
-    voltCard.classList.remove("is-cyan", "is-green", "is-hot");
-    statusPill.classList.remove("is-green", "is-hot");
-
-    if (inGreenZone) {
-      voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-green";
-      voltCard.classList.add("is-green");
-      helperBadge.textContent = "✅ ¡ZONA VERDE PERFECTA!";
-      helperBadge.style.color = "#6ee7b7";
-
-      statusPill.textContent = "🫧 ¡PRODUCIENDO O₂!";
-      statusPill.classList.add("is-green");
-
-      artyText.innerHTML =
+    if (game.zona === "verde") {
+      el.statusPill.textContent = "🫧 ¡PRODUCIENDO O₂!";
+      el.statusPill.classList.add("is-green");
+      el.artyText.innerHTML =
         '<strong style="color:#6ee7b7;">¡Genial!</strong> El reactor está en zona verde generando oxígeno. <strong style="color:#fcd34d;">¡Toca las burbujas</strong> para llenar el tanque más rápido!';
-
-      if (!game.wasInGreenZone) sfx.greenZoneLock();
-    } else if (diff < -1) {
-      voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-cyan";
-      voltCard.classList.add("is-cyan");
-      helperBadge.textContent = "⬆️ ¡Falta energía! Sube más";
-      helperBadge.style.color = "#fcd34d";
-
-      statusPill.textContent = "⚡ SUBE EL VOLTAJE";
-
-      artyText.innerHTML = `<strong style="color:#fcd34d;">Paso 1:</strong> Toca los cristales de energía hasta llegar a la <strong style="color:#6ee7b7;">zona verde (${minGreen} V – ${maxGreen} V)</strong>.`;
+    } else if (game.zona === "bajo") {
+      el.statusPill.textContent = "⚡ SUBE EL VOLTAJE";
+      el.artyText.innerHTML = `<strong style="color:#fcd34d;">Paso 1:</strong> Enciende cristales o mueve la palanca hasta la <strong style="color:#6ee7b7;">zona verde (${minGreen} V – ${maxGreen} V)</strong>.`;
+    } else if (alerta) {
+      el.statusPill.textContent = "🚨 ¡SE SOBRECALIENTA!";
+      el.statusPill.classList.add("is-hot");
+      el.artyText.innerHTML = `<strong style="color:#fda4af;">¡PELIGRO!</strong> El reactor está a punto de fallar. <strong style="color:#6ee7b7;">Baja el voltaje a ${game.targetVolt} V</strong> ya, o pulsa ENFRIAR para ganar tiempo.`;
     } else {
-      voltDisplay.className = "ox-font-orbitron ox-meter-val ox-glow-rose";
-      voltCard.classList.add("is-hot");
-      helperBadge.textContent = "⬇️ ¡Mucha energía! Baja un poco";
-      helperBadge.style.color = "#fda4af";
-
-      statusPill.textContent = "🔥 DEMASIADA ENERGÍA";
-      statusPill.classList.add("is-hot");
-
-      artyText.innerHTML = `<strong style="color:#fda4af;">¡Uy, mucha energía!</strong> Apaga un cristal o baja la palanca hacia <strong style="color:#6ee7b7;">${game.targetVolt} V</strong>.`;
+      el.statusPill.textContent = "🔥 DEMASIADA ENERGÍA";
+      el.statusPill.classList.add("is-hot");
+      el.artyText.innerHTML = `<strong style="color:#fda4af;">¡Uy, mucha energía!</strong> El reactor se está calentando. Baja la palanca hacia <strong style="color:#6ee7b7;">${game.targetVolt} V</strong> antes de que se sobrecaliente.`;
     }
+  }
 
-    if (game.isHot) {
-      tempText.textContent = "🌡️ Tibia · Pulsa ENFRIAR";
-      tempText.style.color = "#fcd34d";
-    } else {
-      tempText.textContent = "❄️ Fresquita y segura";
-      tempText.style.color = "#34d399";
+  function renderHeat() {
+    const heat = Math.max(0, Math.min(100, game.heat));
+    el.heatBar.style.width = `${heat.toFixed(1)}%`;
+    const nivel = heat >= CFG.CALOR_ALERTA ? "danger" : heat >= 30 ? "warm" : "cool";
+    el.heatBar.classList.toggle("is-warm", nivel === "warm");
+    el.heatBar.classList.toggle("is-danger", nivel === "danger");
+
+    const key = nivel + (game.zona === "caliente" ? "+" : "");
+    if (key !== tempKey) {
+      tempKey = key;
+      if (nivel === "cool") {
+        el.tempText.textContent = "❄️ Fresquita y segura";
+        el.tempText.style.color = "#34d399";
+      } else if (nivel === "warm") {
+        el.tempText.textContent = game.zona === "caliente" ? "🌡️ Tibia · ¡Baja el voltaje!" : "🌡️ Tibia · Enfriándose";
+        el.tempText.style.color = "#fcd34d";
+      } else {
+        el.tempText.textContent = "🔥 ¡PELIGRO! Baja el voltaje";
+        el.tempText.style.color = "#fb7185";
+      }
     }
+    renderStatus();
 
-    game.wasInGreenZone = inGreenZone;
+    const cd = game.coolCooldown;
+    el.btnCool.disabled = cd > 0 || game.finished;
+    el.coolLabel.textContent = cd > 0 ? `${cd.toFixed(1)} s` : "ENFRIAR";
   }
 
   function coolReactor() {
-    if (game.roundWon) return;
+    if (game.finished || game.coolCooldown > 0 || game.heat < 1) return;
     sfx.waterSplash();
+    game.heat = Math.max(0, game.heat - CFG.ENFRIAR_RESTA);
+    game.coolCooldown = CFG.ENFRIAR_COOLDOWN;
     for (let i = 0; i < 16; i++) {
       particles.push({
-        x: Math.random() * tankCanvas.width,
+        x: Math.random() * (view.w || 300),
         y: 12 + Math.random() * 25,
         r: 4 + Math.random() * 4,
         vx: (Math.random() - 0.5) * 2.5,
@@ -504,68 +567,243 @@ export function iniciar(contenedor, onTerminar) {
         life: 45
       });
     }
-    if (game.currentVolt > game.targetVolt + 1) {
-      onSliderChange(game.targetVolt);
-    }
-  }
-
-  function resizeCanvas() {
-    if (!contenedor.isConnected) return;
-    const rect = tankCanvas.parentElement.getBoundingClientRect();
-    tankCanvas.width = Math.max(280, Math.floor(rect.width - 20));
-    tankCanvas.height = Math.max(210, Math.floor(rect.height - 68));
-
-    const cRect = chassis.getBoundingClientRect();
-    confettiCanvas.width = Math.max(300, Math.floor(cRect.width));
-    confettiCanvas.height = Math.max(300, Math.floor(cRect.height));
+    renderHeat();
   }
 
   function addOxygenProgress(amount) {
-    if (game.roundWon) return;
+    if (game.finished) return;
     game.oxygenProgress = Math.min(100, game.oxygenProgress + amount);
-    const pct = Math.round(game.oxygenProgress);
-    q("oxygenProgressBar").style.width = `${pct}%`;
-    q("oxygenPercentText").textContent = `${pct}%`;
+    const pct = Math.floor(game.oxygenProgress);
+    el.progBar.style.width = `${game.oxygenProgress.toFixed(1)}%`;
+    el.progText.textContent = `${pct}%`;
+    if (game.oxygenProgress >= 100) triggerVictory();
+  }
 
-    if (pct >= 100) {
-      triggerVictory();
-    }
+  function terminar(exito, retardoMs) {
+    game.finished = true;
+    // Bloquear controles (también por teclado) mientras se muestra el overlay final
+    el.slider.disabled = true;
+    crystalBtns.forEach((b) => { b.disabled = true; });
+    endTimer = setTimeout(() => {
+      endTimer = null;
+      destruir();
+      if (typeof onTerminar === "function") onTerminar({ exito });
+    }, retardoMs);
   }
 
   function triggerVictory() {
-    if (game.roundWon) return;
-    game.roundWon = true;
-    q("victoryOverlay").classList.remove("is-hidden");
+    if (game.finished) return;
+    el.victory.classList.remove("is-hidden");
     sfx.victoryFanfare();
     launchConfetti();
-
-    // Limpiar bucles y reportar éxito al contrato (P1/P2)
-    setTimeout(() => {
-      limpiarRecursos();
-      onTerminar({ exito: true });
-    }, 1500);
+    terminar(true, CFG.RETARDO_VICTORIA_MS);
   }
 
-  function limpiarRecursos() {
-    if (fillIntervalId) clearInterval(fillIntervalId);
+  function triggerDefeat() {
+    if (game.finished) return;
+    game.heat = 100;
+    renderHeat();
+    el.defeat.classList.remove("is-hidden");
+    sfx.defeatBuzz();
+    shakeChassis();
+    terminar(false, CFG.RETARDO_DERROTA_MS);
+  }
+
+  // Detiene todo y libera recursos. NO llama a onTerminar.
+  function destruir() {
+    if (game.destroyed) return;
+    game.destroyed = true;
     if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+    if (endTimer) clearTimeout(endTimer);
+    endTimer = null;
+    if (resizeObs) resizeObs.disconnect();
+    resizeObs = null;
     window.removeEventListener("resize", resizeCanvas);
+    if (audioCtx) {
+      audioCtx.close().catch(() => {});
+      audioCtx = null;
+    }
+    if (instancias.get(contenedor) === destruir) instancias.delete(contenedor);
   }
 
-  function drawReactorTank() {
-    const ctx = tankCanvas.getContext("2d");
-    const w = tankCanvas.width;
-    const h = tankCanvas.height;
+  // ------------------------------------------------------------- TAMAÑO CANVAS
+  function resizeCanvas() {
+    if (game.destroyed) return;
+    const w = Math.floor(tankStage.clientWidth);
+    const h = Math.floor(tankStage.clientHeight);
+    if (w > 0 && h > 0) {
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      view.w = w;
+      view.h = h;
+      view.dpr = dpr;
+      tankCanvas.width = Math.round(w * dpr);
+      tankCanvas.height = Math.round(h * dpr);
+    }
+    const cw = Math.floor(chassis.clientWidth);
+    const ch = Math.floor(chassis.clientHeight);
+    if (cw > 0 && ch > 0) {
+      confettiCanvas.width = cw;
+      confettiCanvas.height = ch;
+    }
+  }
 
+  // --------------------------------------------------------------- SIMULACIÓN
+  function geom() {
+    const { w, h } = view;
+    return {
+      w, h,
+      anodeX: w * 0.24,
+      cathodeX: w * 0.8,
+      plateTop: h * 0.22,
+      plateH: h * 0.66
+    };
+  }
+
+  function spawnParticles(dt) {
+    const g = geom();
+    if (game.zona === "verde") {
+      if (Math.random() < CFG.BURBUJAS_O2_POR_S * dt) {
+        const isGold = Math.random() < CFG.PROB_DORADA;
+        particles.push({
+          x: g.anodeX + (Math.random() - 0.5) * 70,
+          y: g.plateTop + Math.random() * g.plateH,
+          r: isGold ? 18 : 14,
+          vx: (Math.random() - 0.5) * 0.9,
+          vy: -(1.1 + Math.random() * 1.1),
+          type: isGold ? "goldO2" : "cyanO2",
+          wobble: Math.random() * Math.PI * 2
+        });
+      }
+      if (Math.random() < CFG.BURBUJAS_H2_POR_S * dt) {
+        particles.push({
+          x: g.cathodeX + (Math.random() - 0.5) * 45,
+          y: g.plateTop + Math.random() * g.plateH,
+          r: 7 + Math.random() * 4,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -(1.5 + Math.random() * 1.3),
+          type: "purpleH2",
+          wobble: Math.random() * Math.PI * 2
+        });
+      }
+    } else if (game.zona === "caliente") {
+      game.sparkTimer += dt;
+      if (game.sparkTimer >= 0.3) {
+        game.sparkTimer = 0;
+        sfx.softSpark();
+        if (game.heat >= 40) shakeChassis();
+        for (let s = 0; s < 5; s++) {
+          particles.push({
+            x: g.anodeX + (Math.random() - 0.5) * 30,
+            y: g.plateTop + Math.random() * g.plateH,
+            r: 3,
+            vx: (Math.random() - 0.5) * 5,
+            vy: (Math.random() - 0.5) * 5,
+            type: "heatSpark",
+            life: 18
+          });
+        }
+      }
+    } else if (Math.random() < 1.5 * dt) {
+      // Zona baja: burbujitas apagadas, decorativas, NO tocables
+      particles.push({
+        x: g.anodeX + (Math.random() - 0.5) * 40,
+        y: g.plateTop + Math.random() * g.plateH,
+        r: 11,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: -0.9,
+        type: "dimO2",
+        wobble: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function updateParticles(dt) {
+    const k = dt * 60; // factor para que la velocidad no dependa de los fps
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      switch (p.type) {
+        case "goldO2":
+        case "cyanO2":
+        case "dimO2":
+        case "purpleH2":
+          p.wobble += 0.08 * k;
+          p.x += (p.vx + Math.sin(p.wobble) * 0.45) * k;
+          p.y += p.vy * k;
+          if (p.y + p.r < 0) particles.splice(i, 1);
+          break;
+        case "starSpark":
+        case "heatSpark":
+          p.x += p.vx * k;
+          p.y += p.vy * k;
+          p.life -= k;
+          if (p.life <= 0) particles.splice(i, 1);
+          break;
+        case "coolDrop":
+          p.x += p.vx * k;
+          p.y += p.vy * k;
+          p.life -= k;
+          if (p.life <= 0 || p.y > view.h) particles.splice(i, 1);
+          break;
+        case "waterRipple":
+          p.r += 2.2 * k;
+          p.life -= k;
+          if (p.life <= 0) particles.splice(i, 1);
+          break;
+        default:
+          particles.splice(i, 1);
+      }
+    }
+    for (let i = floatingScores.length - 1; i >= 0; i--) {
+      const fs = floatingScores[i];
+      fs.y -= 78 * dt;
+      fs.life -= dt;
+      if (fs.life <= 0) floatingScores.splice(i, 1);
+    }
+  }
+
+  function update(dt) {
+    // Cooldown del botón
+    if (game.coolCooldown > 0) game.coolCooldown = Math.max(0, game.coolCooldown - dt);
+
+    if (!game.finished) {
+      // Relleno pasivo (pequeño): las burbujas son lo que realmente acelera el tanque
+      if (game.zona === "verde") addOxygenProgress(CFG.RELLENO_PASIVO * dt);
+
+      // Calor
+      if (game.zona === "caliente") {
+        const diff = game.currentVolt - game.targetVolt;
+        const rate = CFG.CALOR_POR_S[Math.min(diff, 4) - 2];
+        game.heat = Math.min(100, game.heat + rate * dt);
+      } else {
+        game.heat = Math.max(0, game.heat - CFG.ENFRIAMIENTO_PASIVO * dt);
+      }
+      renderHeat();
+      if (game.heat >= 100) triggerDefeat();
+    } else {
+      renderHeat();
+    }
+
+    if (!game.finished) spawnParticles(dt);
+    updateParticles(dt);
+  }
+
+  // ------------------------------------------------------------------- DIBUJO
+  function drawTank() {
+    const { w, h, dpr } = view;
+    if (!w || !h) return;
+    const ctx = tankCtx;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, h);
 
-    const inGreenZone = Math.abs(game.currentVolt - game.targetVolt) <= 1;
+    const g = geom();
+    const verde = game.zona === "verde";
 
     const waterGrad = ctx.createLinearGradient(0, 0, 0, h);
-    if (inGreenZone) {
+    if (verde) {
       waterGrad.addColorStop(0, "rgba(16, 185, 129, 0.22)");
       waterGrad.addColorStop(1, "rgba(6, 182, 212, 0.34)");
-    } else if (game.isHot) {
+    } else if (game.zona === "caliente") {
       waterGrad.addColorStop(0, "rgba(244, 63, 94, 0.22)");
       waterGrad.addColorStop(1, "rgba(251, 146, 60, 0.28)");
     } else {
@@ -577,7 +815,7 @@ export function iniciar(contenedor, onTerminar) {
 
     // Membrana PEM
     ctx.save();
-    ctx.strokeStyle = inGreenZone ? "rgba(74, 222, 128, 0.65)" : "rgba(148, 163, 184, 0.35)";
+    ctx.strokeStyle = verde ? "rgba(74, 222, 128, 0.65)" : "rgba(148, 163, 184, 0.35)";
     ctx.lineWidth = 3;
     ctx.setLineDash([8, 6]);
     ctx.beginPath();
@@ -587,97 +825,25 @@ export function iniciar(contenedor, onTerminar) {
     ctx.restore();
 
     // Electrodos
-    const anodeX = w * 0.24;
-    const cathodeX = w * 0.8;
-    const plateTop = h * 0.22;
-    const plateH = h * 0.66;
-
-    ctx.fillStyle = inGreenZone ? "#22d3ee" : "#38bdf8";
-    ctx.beginPath();
-    ctx.roundRect(anodeX - 10, plateTop, 20, plateH, 8);
-    ctx.fill();
-    ctx.fillStyle = "#082f49";
+    const plate = (cx, color) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(cx - 10, g.plateTop, 20, g.plateH, 8);
+      else ctx.rect(cx - 10, g.plateTop, 20, g.plateH);
+      ctx.fill();
+    };
     ctx.font = "bold 14px Orbitron, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("O₂", anodeX, plateTop + plateH / 2 + 5);
-
-    ctx.fillStyle = "#c084fc";
-    ctx.beginPath();
-    ctx.roundRect(cathodeX - 10, plateTop, 20, plateH, 8);
-    ctx.fill();
+    plate(g.anodeX, verde ? "#22d3ee" : "#38bdf8");
+    ctx.fillStyle = "#082f49";
+    ctx.fillText("O₂", g.anodeX, g.plateTop + g.plateH / 2 + 5);
+    plate(g.cathodeX, "#c084fc");
     ctx.fillStyle = "#3b0764";
-    ctx.fillText("H₂", cathodeX, plateTop + plateH / 2 + 5);
+    ctx.fillText("H₂", g.cathodeX, g.plateTop + g.plateH / 2 + 5);
 
-    // Generación de burbujas
-    if (!game.roundWon) {
-      if (inGreenZone) {
-        if (Math.random() < 0.22) {
-          const isGold = Math.random() < 0.32;
-          particles.push({
-            x: anodeX + (Math.random() - 0.5) * 70,
-            y: plateTop + Math.random() * plateH,
-            r: isGold ? 18 : 14,
-            vx: (Math.random() - 0.5) * 0.9,
-            vy: -(1.1 + Math.random() * 1.1),
-            type: isGold ? "goldO2" : "cyanO2",
-            wobble: Math.random() * Math.PI * 2
-          });
-        }
-        if (Math.random() < 0.25) {
-          particles.push({
-            x: cathodeX + (Math.random() - 0.5) * 45,
-            y: plateTop + Math.random() * plateH,
-            r: 7 + Math.random() * 4,
-            vx: (Math.random() - 0.5) * 0.8,
-            vy: -(1.5 + Math.random() * 1.3),
-            type: "purpleH2",
-            wobble: Math.random() * Math.PI * 2
-          });
-        }
-      } else if (game.isHot) {
-        sparkTick++;
-        if (sparkTick % 18 === 0) {
-          sfx.softSpark();
-          shakeChassis();
-          for (let s = 0; s < 5; s++) {
-            particles.push({
-              x: anodeX + (Math.random() - 0.5) * 30,
-              y: plateTop + Math.random() * plateH,
-              r: 3,
-              vx: (Math.random() - 0.5) * 5,
-              vy: (Math.random() - 0.5) * 5,
-              type: "heatSpark",
-              life: 18
-            });
-          }
-        }
-      } else if (Math.random() < 0.05) {
-        particles.push({
-          x: anodeX + (Math.random() - 0.5) * 40,
-          y: plateTop + Math.random() * plateH,
-          r: 11,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: -0.9,
-          type: "cyanO2",
-          wobble: Math.random() * Math.PI * 2
-        });
-      }
-    }
-
-    // Dibujo de partículas
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-
-      if (p.type === "goldO2" || p.type === "cyanO2" || p.type === "purpleH2") {
-        p.wobble += 0.08;
-        p.x += p.vx + Math.sin(p.wobble) * 0.45;
-        p.y += p.vy;
-
-        if (p.y + p.r < 0) {
-          particles.splice(i, 1);
-          continue;
-        }
-
+    // Partículas
+    for (const p of particles) {
+      if (p.type === "goldO2" || p.type === "cyanO2" || p.type === "dimO2" || p.type === "purpleH2") {
         ctx.save();
         if (p.type === "goldO2") {
           ctx.fillStyle = "rgba(253, 224, 71, 0.88)";
@@ -689,6 +855,9 @@ export function iniciar(contenedor, onTerminar) {
           ctx.strokeStyle = "#bae6fd";
           ctx.shadowColor = "#38bdf8";
           ctx.shadowBlur = 10;
+        } else if (p.type === "dimO2") {
+          ctx.fillStyle = "rgba(148, 163, 184, 0.28)";
+          ctx.strokeStyle = "rgba(148, 163, 184, 0.45)";
         } else {
           ctx.fillStyle = "rgba(192, 132, 252, 0.65)";
           ctx.strokeStyle = "#e9d5ff";
@@ -712,37 +881,17 @@ export function iniciar(contenedor, onTerminar) {
         }
         ctx.restore();
       } else if (p.type === "starSpark" || p.type === "heatSpark") {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-        if (p.life <= 0) {
-          particles.splice(i, 1);
-          continue;
-        }
         ctx.fillStyle = p.type === "starSpark" ? "#fde047" : "#fb7185";
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === "coolDrop") {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-        if (p.life <= 0 || p.y > h) {
-          particles.splice(i, 1);
-          continue;
-        }
         ctx.fillStyle = "rgba(125, 211, 252, 0.85)";
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === "waterRipple") {
-        p.r += 2.2;
-        p.life--;
-        if (p.life <= 0) {
-          particles.splice(i, 1);
-          continue;
-        }
-        ctx.strokeStyle = `rgba(103, 232, 249, ${p.life / 16})`;
+        ctx.strokeStyle = `rgba(103, 232, 249, ${Math.max(0, p.life / 16)})`;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -750,18 +899,12 @@ export function iniciar(contenedor, onTerminar) {
       }
     }
 
-    for (let i = floatingScores.length - 1; i >= 0; i--) {
-      const fs = floatingScores[i];
-      fs.y -= 1.3;
-      fs.life--;
-      if (fs.life <= 0) {
-        floatingScores.splice(i, 1);
-        continue;
-      }
+    for (const fs of floatingScores) {
       ctx.save();
       ctx.font = "bold 16px Fredoka, sans-serif";
       ctx.fillStyle = fs.color;
       ctx.textAlign = "center";
+      ctx.globalAlpha = Math.max(0, Math.min(1, fs.life / 0.25));
       ctx.fillText(fs.text, fs.x, fs.y);
       ctx.restore();
     }
@@ -784,23 +927,21 @@ export function iniciar(contenedor, onTerminar) {
     }
   }
 
-  function updateConfetti() {
-    const ctx = confettiCanvas.getContext("2d");
+  function updateConfetti(dt) {
+    const k = dt * 60;
+    const ctx = confettiCtx;
     ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-
     for (let i = confettiPieces.length - 1; i >= 0; i--) {
       const c = confettiPieces[i];
-      c.x += c.vx;
-      c.y += c.vy;
-      c.vy += 0.35;
-      c.rot += c.vrot;
-      c.life--;
-
+      c.x += c.vx * k;
+      c.y += c.vy * k;
+      c.vy += 0.35 * k;
+      c.rot += c.vrot * k;
+      c.life -= k;
       if (c.life <= 0 || c.y > confettiCanvas.height + 20) {
         confettiPieces.splice(i, 1);
         continue;
       }
-
       ctx.save();
       ctx.translate(c.x, c.y);
       ctx.rotate(c.rot);
@@ -810,7 +951,31 @@ export function iniciar(contenedor, onTerminar) {
     }
   }
 
-  // Event Listeners
+  // ------------------------------------------------------------------ BUCLE
+  function frame(now) {
+    if (game.destroyed) return;
+    // Si el HTML del juego salió del DOM (modal removido), se autolimpia.
+    if (!chassis.isConnected) {
+      destruir();
+      return;
+    }
+    rafId = requestAnimationFrame(frame);
+
+    let dt = (now - lastT) / 1000;
+    lastT = now;
+    if (!(dt > 0)) dt = 1 / 60;
+    dt = Math.min(dt, 0.1);
+
+    // Si el modal está oculto (display:none) el juego queda en PAUSA: no avanza,
+    // no gana y no pierde mientras nadie lo está viendo.
+    if (chassis.getClientRects().length === 0) return;
+
+    update(dt);
+    drawTank();
+    updateConfetti(dt);
+  }
+
+  // ----------------------------------------------------------------- EVENTOS
   q("btnAudio").addEventListener("click", () => {
     sfx.enabled = !sfx.enabled;
     q("audioIcon").textContent = sfx.enabled ? "🔊" : "🔇";
@@ -821,92 +986,69 @@ export function iniciar(contenedor, onTerminar) {
     btn.addEventListener("click", () => toggleCrystal(idx));
   });
 
-  q("voltageSlider").addEventListener("input", (e) => {
-    onSliderChange(e.target.value);
-  });
-
-  q("btnCool").addEventListener("click", coolReactor);
+  el.slider.addEventListener("input", (e) => onSliderChange(e.target.value));
+  el.btnCool.addEventListener("click", coolReactor);
 
   tankCanvas.addEventListener("pointerdown", (e) => {
-    if (game.roundWon) return;
+    if (game.finished) return;
     const rect = tankCanvas.getBoundingClientRect();
-    const px = (e.clientX - rect.left) * (tankCanvas.width / rect.width);
-    const py = (e.clientY - rect.top) * (tankCanvas.height / rect.height);
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
 
     let poppedAny = false;
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      if (p.type === "goldO2" || p.type === "cyanO2") {
-        const dist = Math.hypot(p.x - px, p.y - py);
-        if (dist <= p.r + 22) {
-          poppedAny = true;
-          const isGold = p.type === "goldO2";
-          particles.splice(i, 1);
+      if (p.type !== "goldO2" && p.type !== "cyanO2") continue; // las apagadas no se explotan
+      if (Math.hypot(p.x - px, p.y - py) > p.r + 22) continue;
 
-          const gain = isGold ? 14 : 6;
-          addOxygenProgress(gain);
-          sfx.bubblePop(isGold);
+      poppedAny = true;
+      const isGold = p.type === "goldO2";
+      particles.splice(i, 1);
 
-          floatingScores.push({
-            x: p.x,
-            y: p.y,
-            text: isGold ? `+${gain}% O₂ ⭐` : `+${gain}% O₂`,
-            color: isGold ? "#fde047" : "#67e8f9",
-            life: 36
-          });
-
-          for (let k = 0; k < 8; k++) {
-            const angle = (Math.PI * 2 * k) / 8;
-            particles.push({
-              x: p.x,
-              y: p.y,
-              r: 3.5,
-              vx: Math.cos(angle) * 3.5,
-              vy: Math.sin(angle) * 3.5,
-              type: "starSpark",
-              life: 20
-            });
-          }
-          break;
-        }
+      const gain = isGold ? CFG.GANANCIA_DORADA : CFG.GANANCIA_BURBUJA;
+      addOxygenProgress(gain);
+      sfx.bubblePop(isGold);
+      floatingScores.push({
+        x: p.x,
+        y: p.y,
+        text: isGold ? `+${gain}% O₂ ⭐` : `+${gain}% O₂`,
+        color: isGold ? "#fde047" : "#67e8f9",
+        life: 0.6
+      });
+      for (let k = 0; k < 8; k++) {
+        const angle = (Math.PI * 2 * k) / 8;
+        particles.push({
+          x: p.x, y: p.y, r: 3.5,
+          vx: Math.cos(angle) * 3.5,
+          vy: Math.sin(angle) * 3.5,
+          type: "starSpark",
+          life: 20
+        });
       }
+      break;
     }
 
-    if (!poppedAny) {
-      particles.push({ x: px, y: py, r: 5, type: "waterRipple", life: 16 });
-    }
+    if (!poppedAny) particles.push({ x: px, y: py, r: 5, type: "waterRipple", life: 16 });
   });
 
-  window.addEventListener("resize", resizeCanvas);
-
-  // Bucles principales
-  fillIntervalId = setInterval(() => {
-    if (!contenedor.isConnected) {
-      limpiarRecursos();
-      return;
-    }
-    if (game.roundWon) return;
-    const inGreenZone = Math.abs(game.currentVolt - game.targetVolt) <= 1;
-    if (inGreenZone) {
-      addOxygenProgress(1.8);
-    }
-  }, 100);
-
-  function animationLoop() {
-    if (!contenedor.isConnected) {
-      limpiarRecursos();
-      return;
-    }
-    drawReactorTank();
-    updateConfetti();
-    rafId = requestAnimationFrame(animationLoop);
+  if (typeof ResizeObserver !== "undefined") {
+    resizeObs = new ResizeObserver(() => resizeCanvas());
+    resizeObs.observe(tankStage);
+    resizeObs.observe(chassis);
+  } else {
+    window.addEventListener("resize", resizeCanvas);
   }
 
-  // Inicialización
+  // ------------------------------------------------------------- INICIALIZAR
+  instancias.set(contenedor, destruir);
   [0, 1, 2].forEach(updateCrystalVisual);
-  syncSliderAndUI();
-  requestAnimationFrame(() => {
-    resizeCanvas();
-    animationLoop();
+  onVoltChanged();
+  renderHeat();
+  resizeCanvas();
+  rafId = requestAnimationFrame((t) => {
+    lastT = t;
+    frame(t);
   });
+
+  return destruir;
 }
