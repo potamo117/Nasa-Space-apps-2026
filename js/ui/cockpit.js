@@ -1,67 +1,90 @@
-// PROVISIONAL (P1): P2 lo reemplaza con la cabina real.
-// `hora` llega como "XX:XX" (en la prórroga llega como cuenta regresiva "00:09").
-export function actualizarCockpit(estado, hora) {
-  const el = document.getElementById("debug-cockpit");
-  if (!el) return;
-  const f = (n) => Math.round(n * 10) / 10;
-  el.textContent =
-    `Reloj: ${hora}\n` +
-    `Electricidad: ${f(estado.electricidad)}%\n` +
-    `Comida: ${f(estado.comida)} | Agua: ${f(estado.agua)} | Oxígeno: ${f(estado.oxigeno)} | Radiación: ${f(estado.radiacion)}\n` +
-    `Interruptores: ${JSON.stringify(estado.interruptores)}\n` +
-    `Fallos activos: ${estado.fallos.join(", ") || "ninguno"}`;
-}
+// Cabina (P2): reloj, barra de energía, porcentajes, gráficas, fallos e interruptores.
+const SECTORES = ["agua", "comida", "oxigeno", "radiacion"];
+const $ = (id) => document.getElementById(id);
 
-//código cabina
 const historial = {
-  agua: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-  comida: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-  oxigeno: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
-  radiacion: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  agua: Array(12).fill(100),
+  comida: Array(12).fill(100),
+  oxigeno: Array(12).fill(100),
+  radiacion: Array(12).fill(0),
 };
 
 const COLORES_SECTOR = {
-  agua: '#29b6f6',
-  comida: '#66bb6a',
-  oxigeno: '#26c6da',
-  radiacion: '#ffa726',
+  agua: "#29b6f6",
+  comida: "#66bb6a",
+  oxigeno: "#26c6da",
+  radiacion: "#ffa726",
 };
 
-export function actualizarCockpit(estado, hora = '06:00', dia = 1) {
-  document.getElementById('reloj-hora').textContent = hora;
-  document.getElementById('reloj-dia').textContent = `DÍA ${dia}`;
+// Las gráficas avanzan un punto cada 2 s reales (no en cada refresco).
+const MS_ENTRE_MUESTRAS = 2000;
+let ultimoMuestreo = 0;
+
+// `hora` llega como "XX:XX"; en la prórroga llega como cuenta regresiva ("00:09").
+export function actualizarCockpit(estado, hora = "06:00", dia = 1) {
+  const debug = $("debug-cockpit"); // solo existe en test/core.html
+  if (debug) {
+    const f = (n) => Math.round(n * 10) / 10;
+    debug.textContent =
+      `Reloj: ${hora} | Día ${dia}\n` +
+      `Electricidad: ${f(estado.electricidad)}%\n` +
+      `Comida: ${f(estado.comida)} | Agua: ${f(estado.agua)} | Oxígeno: ${f(estado.oxigeno)} | Radiación: ${f(estado.radiacion)}\n` +
+      `Interruptores: ${JSON.stringify(estado.interruptores)}\n` +
+      `Fallos activos: ${estado.fallos.join(", ") || "ninguno"}`;
+  }
+
+  const relojHora = $("reloj-hora");
+  if (relojHora) {
+    relojHora.textContent = hora;
+    relojHora.style.color = hora.startsWith("00:") ? "var(--alert-red)" : "";
+  }
+  const relojDia = $("reloj-dia");
+  if (relojDia) relojDia.textContent = `DÍA ${dia}`;
 
   const energia = Math.max(0, Math.min(100, Math.round(estado.electricidad)));
-  document.getElementById('energia-porcentaje').textContent = `${energia}%`;
-  document.getElementById('energia-barra').style.height = `${energia}%`;
+  const energiaTxt = $("energia-porcentaje");
+  if (energiaTxt) energiaTxt.textContent = `${energia}%`;
+  const energiaBarra = $("energia-barra");
+  if (energiaBarra) energiaBarra.style.height = `${energia}%`;
 
-  ['agua', 'comida', 'oxigeno', 'radiacion'].forEach((sector) => {
+  const ahora = Date.now();
+  const muestrear = ahora - ultimoMuestreo >= MS_ENTRE_MUESTRAS;
+  if (muestrear) ultimoMuestreo = ahora;
+
+  SECTORES.forEach((sector) => {
     const valor = Math.max(0, Math.min(100, Math.round(estado[sector])));
-    document.getElementById(`val-${sector}`).textContent = `${valor}%`;
+    const valTxt = $(`val-${sector}`);
+    if (valTxt) valTxt.textContent = `${valor}%`;
 
     const tarjeta = document.querySelector(`.sector-unit[data-sector="${sector}"]`);
-    if (estado.fallos && estado.fallos.includes(sector)) {
-      tarjeta.classList.add('en-fallo');
-    } else {
-      tarjeta.classList.remove('en-fallo');
+    if (tarjeta) tarjeta.classList.toggle("en-fallo", estado.fallos.includes(sector));
+
+    // Interruptor: refleja estado.interruptores (por ejemplo tras un apagón o al reiniciar).
+    const encendido = estado.interruptores[sector];
+    const sw = $(`sw-${sector}`);
+    if (sw) sw.classList.toggle("active", encendido);
+    const st = $(`st-${sector}`);
+    if (st) {
+      st.textContent = encendido ? "CONECTADO" : "APAGADO";
+      st.classList.toggle("off", !encendido);
     }
 
-    historial[sector].push(valor);
-    if (historial[sector].length > 14) historial[sector].shift();
-    dibujarGrafica(`chart-${sector}`, historial[sector], COLORES_SECTOR[sector]);
+    const h = historial[sector];
+    if (muestrear) { h.push(valor); h.shift(); } else { h[h.length - 1] = valor; }
+    dibujarGrafica(`chart-${sector}`, h, COLORES_SECTOR[sector]);
   });
 }
 
 function dibujarGrafica(canvasId, datos, color) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  const canvas = $(canvasId);
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
 
   ctx.clearRect(0, 0, w, h);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
   ctx.lineWidth = 1;
   [0.25, 0.5, 0.75].forEach((p) => {
     ctx.beginPath();
@@ -81,7 +104,7 @@ function dibujarGrafica(canvasId, datos, color) {
 
   ctx.strokeStyle = color;
   ctx.lineWidth = 3.5;
-  ctx.lineJoin = 'round';
+  ctx.lineJoin = "round";
   ctx.stroke();
 
   ctx.lineTo(w, h);
