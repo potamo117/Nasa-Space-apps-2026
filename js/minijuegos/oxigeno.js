@@ -1,3 +1,4 @@
+import { nivelDe } from "../core/dificultad.js";
 // js/minijuegos/oxigeno.js  (P4) — Fábrica de Oxígeno (electrólisis del agua)
 //
 // Contrato:  iniciar(contenedor, onTerminar)
@@ -38,6 +39,10 @@ const instancias = new WeakMap(); // contenedor -> destruir() de la partida acti
 let ultimaMeta = null;            // para no repetir la misma meta dos veces seguidas
 
 export function iniciar(contenedor, onTerminar) {
+  // Dificultad adaptativa: más relleno y menos calor si vas lento; lo contrario si vas rápido.
+  const NIV = nivelDe("oxigeno");
+  const kRelleno = [1.2, 1, 0.85][NIV];
+  const kCalor = [0.8, 1, 1.3][NIV];
   // Si ya había una partida en este contenedor (modal reabierto), se destruye primero.
   const previa = instancias.get(contenedor);
   if (previa) previa();
@@ -768,13 +773,13 @@ export function iniciar(contenedor, onTerminar) {
 
     if (!game.finished) {
       // Relleno pasivo (pequeño): las burbujas son lo que realmente acelera el tanque
-      if (game.zona === "verde") addOxygenProgress(CFG.RELLENO_PASIVO * dt);
+      if (game.zona === "verde") addOxygenProgress(CFG.RELLENO_PASIVO * kRelleno * dt);
 
       // Calor
       if (game.zona === "caliente") {
         const diff = game.currentVolt - game.targetVolt;
         const rate = CFG.CALOR_POR_S[Math.min(diff, 4) - 2];
-        game.heat = Math.min(100, game.heat + rate * dt);
+        game.heat = Math.min(100, game.heat + rate * kCalor * dt);
       } else {
         game.heat = Math.max(0, game.heat - CFG.ENFRIAMIENTO_PASIVO * dt);
       }

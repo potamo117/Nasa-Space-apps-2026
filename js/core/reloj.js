@@ -4,10 +4,12 @@ import { getDiaActual, cierreAutomaticoJornada } from "./listaEnlazada.js";
 export const HORA_INICIO = 6;   // 06:00
 export const HORA_FIN = 20;     // 20:00
 
-// 1 hora de juego = 30 s reales (ajustable). Afecta a todo el equipo.
-let segundosPorHora = 30;
+// 1 hora de juego = 8 s reales por defecto (la dificultad lo cambia). Un día (06:00-20:00) ≈ 1 min 52 s.
+export const SEGUNDOS_POR_HORA_DEFECTO = 8;
+let segundosPorHora = SEGUNDOS_POR_HORA_DEFECTO;
 let minutos = HORA_INICIO * 60;
 let timer = null;
+let pausadoPorJuego = false;
 
 export function configurarReloj({ segundosPorHora: s } = {}) {
   if (s && s > 0) segundosPorHora = s;
@@ -37,13 +39,11 @@ function emitirHora() {
 export function detenerReloj() {
   clearInterval(timer);
   timer = null;
+  pausadoPorJuego = false;
 }
 
-// Arranca un día nuevo a las 06:00. Cada tick = 1 minuto de juego.
-export function iniciarReloj() {
-  detenerReloj();
-  minutos = HORA_INICIO * 60;
-  emitirHora();
+function arrancar() {
+  clearInterval(timer);
   const msPorMinuto = Math.max(1, (segundosPorHora * 1000) / 60);
   timer = setInterval(() => {
     minutos++;
@@ -53,4 +53,26 @@ export function iniciarReloj() {
       cierreAutomaticoJornada(); // 20:00: cierre nominal o prórroga
     }
   }, msPorMinuto);
+}
+
+// Arranca un día nuevo a las 06:00. Cada tick = 1 minuto de juego.
+export function iniciarReloj() {
+  detenerReloj();
+  minutos = HORA_INICIO * 60;
+  emitirHora();
+  arrancar();
+}
+
+// Pausa sin perder la hora (el reloj solo se reanuda si estaba corriendo).
+export function pausarReloj() {
+  if (timer === null) return;
+  clearInterval(timer);
+  timer = null;
+  pausadoPorJuego = true;
+}
+
+export function reanudarReloj() {
+  if (!pausadoPorJuego) return;
+  pausadoPorJuego = false;
+  arrancar();
 }

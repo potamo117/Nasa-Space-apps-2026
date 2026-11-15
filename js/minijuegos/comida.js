@@ -1,9 +1,13 @@
+import { nivelDe } from "../core/dificultad.js";
 export function iniciar(contenedor, onTerminar) {
+  let destruido = false;
+  let victoryTimerId = null;
+  const INCREMENTO_NIVEL = [1.9, 1.6, 1.3][nivelDe("comida")]; // dificultad adaptativa
   // Cargar CSS automáticamente si se abre desde el index.html principal
   if (!document.querySelector('link[href*="comida.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "./css/comida.css";
+    link.href = new URL("../../css/comida.css", import.meta.url).href;
     document.head.appendChild(link);
   }
 
@@ -437,7 +441,9 @@ export function iniciar(contenedor, onTerminar) {
     sfx.victoryFanfare();
     launchConfetti();
 
-    setTimeout(() => {
+    victoryTimerId = setTimeout(() => {
+      victoryTimerId = null;
+      if (destruido) return;
       limpiarRecursos();
       onTerminar({ exito: true });
     }, 1500);
@@ -445,8 +451,18 @@ export function iniciar(contenedor, onTerminar) {
 
   function limpiarRecursos() {
     if (fillIntervalId) clearInterval(fillIntervalId);
+    fillIntervalId = null;
     if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
     window.removeEventListener("resize", resizeCanvas);
+  }
+
+  // Se devuelve a modal.js para detener todo al cerrar la ventana.
+  function destruir() {
+    destruido = true;
+    if (victoryTimerId) clearTimeout(victoryTimerId);
+    victoryTimerId = null;
+    limpiarRecursos();
   }
 
   function drawGreenhouse() {
@@ -725,7 +741,7 @@ export function iniciar(contenedor, onTerminar) {
     }
     if (game.roundWon) return;
     if (isRedOptimal() && isBlueOptimal()) {
-      addFoodProgress(1.6);
+      addFoodProgress(INCREMENTO_NIVEL);
     }
   }, 100);
 
@@ -742,7 +758,10 @@ export function iniciar(contenedor, onTerminar) {
   // Inicializar
   syncSpectrumUI();
   requestAnimationFrame(() => {
+    if (destruido) return;
     resizeCanvas();
     animationLoop();
   });
+
+  return destruir;
 }

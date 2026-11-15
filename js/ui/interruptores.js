@@ -1,4 +1,7 @@
 //cabina
+import { emitir } from "../core/bus.js";
+import { sonido } from "./audio.js";
+
 export function inicializarInterruptores(estado) {
   const botones = document.querySelectorAll('[data-toggle-sector]');
 
@@ -12,6 +15,8 @@ export function inicializarInterruptores(estado) {
       const textoEstado = document.getElementById(`st-${sector}`);
       textoEstado.textContent = encendido ? 'CONECTADO' : 'APAGADO';
       textoEstado.classList.toggle('off', !encendido);
+      sonido.click();
+      emitir('estado-cambio', {}); // refresca costos y prioridades al instante
     });
   });
 }

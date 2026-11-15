@@ -8,7 +8,7 @@ Prototipo web interactivo para **NASA Space Apps 2026**. El jugador administra u
 
 ## Cómo funciona el juego
 
-- La misión dura **5 días**. Cada día va de **06:00 a 20:00** (1 hora de juego = 30 s reales).
+- La misión dura **5 días**. Cada día va de **06:00 a 20:00** (1 hora de juego = 8 s reales: un día ≈ 1 min 52 s y la partida ≈ 9 min).
 - Hay 5 campos críticos: **Comida, Agua, Oxígeno, Radiación y Electricidad**.
 - La electricidad es el recurso central: cada interruptor encendido la consume, y se recarga al 100% al empezar cada día. Los demás recursos se **arrastran** de un día al siguiente.
 - Los eventos aleatorios desconfiguran Comida, Agua, Oxígeno o Radiación (nunca la electricidad). Un sector con evento activo se degrada más rápido hasta que el jugador gana su minijuego.
@@ -101,15 +101,15 @@ Todos los números viven como constantes en `js/core/energia.js` y están expres
 
 | Constante | Valor | Significado |
 |---|---|---|
-| `CONSUMO_POR_SECTOR` | 3 | % de electricidad por hora, por interruptor encendido |
-| `DEGRADACION_SIN_ENERGIA` | 1.5 | % por hora de un sector con interruptor apagado |
+| `CONSUMO_POR_SECTOR` | 2.4 | % de electricidad por hora, por interruptor encendido |
+| `DEGRADACION_SIN_ENERGIA` | 4 | % por hora de un sector con interruptor apagado |
 | `DEGRADACION_FALLO` | 8 | % por hora de un sector con evento activo |
-| `RECUPERACION_AL_REPARAR` | 25 | % que se recupera al ganar el minijuego |
+| `RECUPERACION_AL_REPARAR` | 12 | % que se recupera al ganar el minijuego |
 
 - **Radiación** funciona al revés: **100 = peligro, 0 = seguro**.
 - **Apagón:** si la electricidad llega a 0, se apagan todos los interruptores (no es derrota por sí solo).
 - **Derrota:** comida, agua u oxígeno en 0, o radiación en 100.
-- Ajustes de eventos aleatorios en `js/main.js`: `PROB_EVENTO_POR_HORA` (0.25), `EXTRA_PROB_POR_DIA` (0.05), `HORA_PRIMER_EVENTO` (7), `HORA_ULTIMO_EVENTO` (18).
+- Ajustes de eventos aleatorios en `js/main.js`: `PROB_EVENTO_POR_HORA` (0.3), `EXTRA_PROB_POR_DIA` (0.07), `HORA_PRIMER_EVENTO` (7), `HORA_ULTIMO_EVENTO` (18).
 - Escala del reloj: `segundosPorHora` en `js/core/reloj.js` (30 por defecto).
 
 ## Contrato entre módulos
@@ -172,3 +172,19 @@ El proyecto se publica en **Vercel** conectando el repositorio (Framework Preset
 
 - Datos de clima espacial: [NASA DONKI](https://api.nasa.gov) (con respaldo local en `data/donki-respaldo.json`).
 - Proyecto desarrollado para NASA Space Apps Challenge 2026.
+
+## Jugabilidad (v3)
+
+Inspirada en FTL, Oxygen Not Included, Overcooked, Reigns y Slay the Spire.
+
+- **Alertas previas:** cada evento avisa unos segundos antes (4–8 s según dificultad).
+- **Eventos con elección:** *parche rápido* (−15 % de energía, evita la falla) o *reparación a fondo* (la falla ocurre, pero reparar da +13 extra). Si no decides en 8 s, la falla ocurre sin bonus.
+- **Solapamiento y prioridad:** en días avanzados dos eventos pueden llegar casi juntos. Cada sector muestra su tiempo restante (⏱) y el más urgente se marca como PRIORIDAD.
+- **Energía con decisiones:** cada sector cuesta distinto (oxígeno y escudos más caros) y se degrada distinto al apagarlo. Los escudos encendidos frenan a la mitad las fallas de radiación.
+- **Un día = una identidad:** Día 1 adaptación, 2 normal, 3 tormenta solar, 4 impactos en cadena, 5 CME masiva (ver `DIAS` en `js/core/eventos.js`).
+- **Resumen de día:** estrellas, puntos, pronóstico del siguiente día y elección de 1 mejora entre 3 (`MEJORAS` en `js/core/progreso.js`).
+- **Logros y puntuación:** 8 logros y mejor puntuación guardados en `localStorage`.
+- **Dificultad:** Fácil / Normal / Difícil (`js/core/dificultad.js`) y minijuegos con **dificultad adaptativa** por sector (ganas rápido: sube; fallas o tardas: baja).
+- **Pausa y tutorial:** botón ⏸, pausa automática al ocultar la pestaña, tutorial de 3 pantallas la primera vez.
+- **Sonido y vibración:** sonidos sintetizados (Web Audio) y vibración en móvil; botón 🔊 para silenciar.
+- **NASA DONKI:** `js/core/donki.js` pide fulguraciones y CME de los últimos 30 días (`DEMO_KEY`) y usa `data/donki-respaldo.json` si falla la red. La fulguración más fuerte fija el riesgo del minijuego de radiación y se muestra en los eventos solares.

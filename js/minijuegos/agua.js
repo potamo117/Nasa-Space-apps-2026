@@ -1,3 +1,4 @@
+import { nivelDe } from '../core/dificultad.js';
 /**
  * Minijuego P3 - Agua (Circuito ECLSS - Base Lunar Artemis)
  * Ruta en el proyecto: js/minijuegos/agua.js
@@ -127,6 +128,7 @@
   class MinijuegoAgua {
     constructor(opciones = {}) {
       this.size = opciones.size || 5;
+      this.intervaloMs = opciones.intervaloMs || 900; // ritmo de contaminación (dificultad adaptativa)
       this.onTerminar = typeof opciones.onTerminar === 'function'
         ? opciones.onTerminar
         : (res) => console.log('onTerminar:', res);
@@ -479,7 +481,7 @@
           );
           this.onTerminar({ exito: false, motivo: 'contaminacion' });
         }
-      }, 900);
+      }, this.intervaloMs);
     }
 
     renderizarTablero() {
@@ -786,6 +788,7 @@ export function iniciar(contenedor, onTerminar) {
   const juego = new window.MinijuegoAgua({
     size: 5,
     root: contenedor,
+    intervaloMs: [1150, 900, 700][nivelDe('agua')],
     onTerminar
   });
   return () => juego.destruir();
