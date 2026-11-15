@@ -1,0 +1,678 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700;800;900&display=swap');
+
+.ox-wrapper {
+  --bg-space: #11151e;
+  --amber-glow: #fbbf24;
+  --green-neon: #4ade80;
+  --cyan-o2: #67e8f9;
+  --coral-alert: #f87171;
+
+  font-family: 'Fredoka', system-ui, sans-serif;
+  color: #f1f5f9;
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+.ox-wrapper * {
+  box-sizing: border-box;
+}
+
+.ox-font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.ox-font-chakra {
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+/* Chasis metálico biselado */
+.ox-chassis-panel {
+  background: linear-gradient(180deg, #2d3646 0%, #202736 100%);
+  border: 2px solid rgba(34, 211, 238, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    0 14px 34px rgba(0, 0, 0, 0.65);
+  border-radius: 24px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.ox-chassis-subpanel {
+  background: linear-gradient(180deg, #232b3b 0%, #181e2b 100%);
+  border: 2px solid #374359;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  position: relative;
+}
+
+/* Pantalla CRT oscura */
+.ox-crt-screen {
+  background-color: #080d16;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at center, #0f192b 0%, #070b14 100%);
+  background-size: 18px 18px, 18px 18px, 100% 100%;
+  border: 2px solid #1e293b;
+  box-shadow:
+    inset 0 4px 18px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tornillos decorativos */
+.ox-screw {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #94a3b8, #1e293b);
+  border: 1px solid #0f172a;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  position: absolute;
+  z-index: 10;
+}
+.ox-screw-tl { top: 10px; left: 10px; }
+.ox-screw-tr { top: 10px; right: 10px; }
+.ox-screw-bl { bottom: 10px; left: 10px; }
+.ox-screw-br { bottom: 10px; right: 10px; }
+
+/* Brillos neón */
+.ox-glow-amber {
+  color: #fbbf24;
+  text-shadow: 0 0 14px rgba(251, 191, 36, 0.65);
+}
+.ox-glow-green {
+  color: #4ade80;
+  text-shadow: 0 0 16px rgba(74, 222, 128, 0.7);
+}
+.ox-glow-cyan {
+  color: #67e8f9;
+  text-shadow: 0 0 14px rgba(103, 232, 249, 0.65);
+}
+.ox-glow-rose {
+  color: #fb7185;
+  text-shadow: 0 0 14px rgba(251, 113, 133, 0.65);
+}
+
+/* Header */
+.ox-header {
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ox-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ox-logo-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 2px solid #22d3ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.ox-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-main-title {
+  margin: 0;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #67e8f9;
+}
+
+.ox-leds {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ox-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.ox-led-green { background: #34d399; box-shadow: 0 0 8px #4ade80; }
+.ox-led-sky   { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+.ox-led-amber { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+
+.ox-badge-module {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(34, 211, 238, 0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #67e8f9;
+}
+
+/* Botones táctiles 3D */
+.ox-juicy-btn {
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    0 4px 0 rgba(15, 23, 42, 0.75),
+    0 7px 14px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.ox-juicy-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.07);
+}
+.ox-juicy-btn:active:not(:disabled) {
+  transform: translateY(3px) scale(0.97);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 rgba(15, 23, 42, 0.85);
+}
+
+.ox-btn-audio {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #334155;
+  border: 1px solid #94a3b8;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Banner Robot Arty */
+.ox-arty-banner {
+  padding: 12px 16px;
+  border: 2px solid rgba(6, 182, 212, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ox-arty-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.ox-arty-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #0f172a;
+  border: 2px solid #22d3ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+  animation: oxBotBounce 2.2s ease-in-out infinite;
+}
+
+.ox-arty-avatar svg {
+  width: 42px;
+  height: 42px;
+}
+
+.ox-arty-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fcd34d;
+  letter-spacing: 0.05em;
+}
+
+.ox-arty-msg {
+  margin: 3px 0 0;
+  font-size: 0.88rem;
+  color: #f1f5f9;
+  line-height: 1.35;
+}
+
+.ox-status-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+  border: 2px solid #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+.ox-status-pill.is-green {
+  border-color: #34d399;
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+.ox-status-pill.is-hot {
+  border-color: #fb7185;
+  background: rgba(244, 63, 94, 0.2);
+  color: #fda4af;
+}
+
+/* Grid Principal */
+.ox-main-grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ox-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-col-right {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+/* Marcadores Meta vs Tu Energía */
+.ox-meters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ox-meter-box {
+  padding: 12px;
+  text-align: center;
+  border: 2px solid rgba(251, 191, 36, 0.7);
+  transition: all 0.2s ease;
+}
+
+.ox-meter-box.is-cyan {
+  border-color: rgba(34, 211, 238, 0.7);
+}
+.ox-meter-box.is-green {
+  border-color: #34d399;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.35);
+}
+.ox-meter-box.is-hot {
+  border-color: #fb7185;
+}
+
+.ox-meter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ox-meter-val {
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+.ox-meter-sub {
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Tanque Interactivo */
+.ox-tank-box {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 290px;
+  border: 2px solid rgba(34, 211, 238, 0.5);
+}
+
+.ox-tank-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  z-index: 5;
+}
+
+.ox-tap-hint {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(252, 211, 77, 0.5);
+}
+
+.ox-tank-canvas {
+  width: 100%;
+  flex: 1;
+  border-radius: 12px;
+  margin-top: 6px;
+  cursor: pointer;
+  display: block;
+}
+
+.ox-tank-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 12px;
+  margin-top: 6px;
+}
+
+.ox-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ox-dot-cyan {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22d3ee;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.ox-dot-gold {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fcd34d;
+  box-shadow: 0 0 10px #fbbf24;
+}
+
+/* Cristales de Energía */
+.ox-section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #67e8f9;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ox-crystals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.ox-crystal-btn {
+  padding: 12px 6px;
+  border-radius: 16px;
+  border: 2px solid #475569;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f1f5f9;
+}
+
+.ox-crystal-btn.is-active {
+  border-color: #34d399;
+  background: rgba(6, 78, 59, 0.7);
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.45);
+}
+
+.ox-crystal-emoji {
+  font-size: 1.75rem;
+}
+
+.ox-crystal-volt {
+  font-size: 1rem;
+  font-weight: 900;
+  margin-top: 4px;
+}
+
+.ox-crystal-state {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.ox-crystal-btn.is-active .ox-crystal-state {
+  color: #6ee7b7;
+}
+
+/* Caja oscura para slider y enfriamiento */
+.ox-dark-card {
+  background: rgba(2, 6, 23, 0.85);
+  border: 2px solid #1e293b;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.ox-slider-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.ox-slider-badge {
+  padding: 2px 10px;
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(34, 211, 238, 0.5);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #67e8f9;
+}
+
+input[type="range"].ox-kid-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: #090e17;
+  border-radius: 999px;
+  border: 2.5px solid #38bdf8;
+  outline: none;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  margin: 8px 0;
+}
+
+input[type="range"].ox-kid-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+  border: 3px solid #fef9c3;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.9), 0 4px 6px rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease;
+}
+input[type="range"].ox-kid-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+input[type="range"].ox-kid-slider::-moz-range-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+  border: 3px solid #fef9c3;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.9);
+}
+
+.ox-slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding-inline: 4px;
+}
+
+/* Fila temperatura */
+.ox-temp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ox-btn-cool {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #38bdf8 0%, #2563eb 100%);
+  border: 1px solid #bae6fd;
+  color: #020617;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Barra de Oxígeno */
+.ox-progress-box {
+  padding: 14px;
+  border: 2px solid rgba(52, 211, 153, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+}
+
+.ox-progress-track {
+  width: 100%;
+  height: 26px;
+  background: #020617;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid #334155;
+  padding: 3px;
+}
+
+.ox-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22d3ee 0%, #34d399 55%, #fcd34d 100%);
+  transition: width 0.15s ease;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.7);
+}
+
+/* Overlay de Victoria y Confeti */
+.ox-confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.ox-victory-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  background: rgba(2, 6, 23, 0.82);
+  backdrop-filter: blur(6px);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.ox-victory-overlay.is-hidden {
+  display: none;
+}
+
+.ox-victory-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  border: 2px solid #34d399;
+  box-shadow: 0 0 50px rgba(74, 222, 128, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: oxVictoryPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes oxScreenShake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-3px, 2px) rotate(-0.3deg); }
+  50% { transform: translate(3px, -2px) rotate(0.3deg); }
+  75% { transform: translate(-2px, -1px) rotate(-0.2deg); }
+}
+.ox-shake-effect {
+  animation: oxScreenShake 0.25s ease-in-out;
+}
+
+@keyframes oxBotBounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes oxVictoryPop {
+  0% { transform: scale(0.85); opacity: 0; }
+  70% { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 860px) {
+  .ox-main-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,607 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700;800;900&display=swap');
+
+.cm-wrapper {
+  --bg-space: #11151e;
+  --amber-glow: #fbbf24;
+  --green-neon: #4ade80;
+  --red-led: #fb7185;
+  --blue-led: #38bdf8;
+
+  font-family: 'Fredoka', system-ui, sans-serif;
+  color: #f1f5f9;
+  width: 100%;
+  max-width: 1024px;
+  margin-inline: auto;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+.cm-wrapper * {
+  box-sizing: border-box;
+}
+
+.cm-font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.cm-font-chakra {
+  font-family: 'Chakra Petch', sans-serif;
+}
+
+/* Chasis metálico biselado */
+.cm-chassis-panel {
+  background: linear-gradient(180deg, #2d3646 0%, #202736 100%);
+  border: 2px solid rgba(52, 211, 153, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    0 14px 34px rgba(0, 0, 0, 0.65);
+  border-radius: 24px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.cm-chassis-subpanel {
+  background: linear-gradient(180deg, #232b3b 0%, #181e2b 100%);
+  border: 2px solid #374359;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  position: relative;
+}
+
+/* Pantalla CRT oscura con rejilla sutil */
+.cm-crt-screen {
+  background-color: #080d16;
+  background-image:
+    linear-gradient(rgba(74, 222, 128, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 222, 128, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at center, #0e1d18 0%, #070b14 100%);
+  background-size: 18px 18px, 18px 18px, 100% 100%;
+  border: 2px solid #1e293b;
+  box-shadow:
+    inset 0 4px 18px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tornillos decorativos */
+.cm-screw {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #94a3b8, #1e293b);
+  border: 1px solid #0f172a;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  position: absolute;
+  z-index: 10;
+}
+.cm-screw-tl { top: 10px; left: 10px; }
+.cm-screw-tr { top: 10px; right: 10px; }
+.cm-screw-bl { bottom: 10px; left: 10px; }
+.cm-screw-br { bottom: 10px; right: 10px; }
+
+/* Brillos neón */
+.cm-glow-amber { color: #fbbf24; text-shadow: 0 0 14px rgba(251, 191, 36, 0.65); }
+.cm-glow-green { color: #4ade80; text-shadow: 0 0 16px rgba(74, 222, 128, 0.7); }
+.cm-glow-red   { color: #fb7185; text-shadow: 0 0 14px rgba(251, 113, 133, 0.65); }
+.cm-glow-blue  { color: #38bdf8; text-shadow: 0 0 14px rgba(56, 189, 248, 0.65); }
+
+/* Header */
+.cm-header {
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cm-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cm-logo-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 2px solid #34d399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.4);
+}
+
+.cm-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cm-main-title {
+  margin: 0;
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #6ee7b7;
+}
+
+.cm-leds {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cm-led {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.cm-led-green { background: #34d399; box-shadow: 0 0 8px #4ade80; }
+.cm-led-sky   { background: #38bdf8; box-shadow: 0 0 8px #38bdf8; }
+.cm-led-amber { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+
+.cm-badge-module {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(52, 211, 153, 0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6ee7b7;
+}
+
+/* Botones táctiles 3D */
+.cm-juicy-btn {
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    0 4px 0 rgba(15, 23, 42, 0.75),
+    0 7px 14px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.cm-juicy-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.07);
+}
+.cm-juicy-btn:active:not(:disabled) {
+  transform: translateY(3px) scale(0.97);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 rgba(15, 23, 42, 0.85);
+}
+
+.cm-btn-audio {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #334155;
+  border: 1px solid #94a3b8;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Banner Robot Arty */
+.cm-arty-banner {
+  padding: 12px 16px;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cm-arty-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.cm-arty-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #0f172a;
+  border: 2px solid #34d399;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.35);
+  animation: cmBotBounce 2.2s ease-in-out infinite;
+}
+
+.cm-arty-avatar svg {
+  width: 42px;
+  height: 42px;
+}
+
+.cm-arty-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fcd34d;
+  letter-spacing: 0.05em;
+}
+
+.cm-arty-msg {
+  margin: 3px 0 0;
+  font-size: 0.88rem;
+  color: #f1f5f9;
+  line-height: 1.35;
+}
+
+.cm-status-pill {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+  border: 2px solid #fbbf24;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+.cm-status-pill.is-green {
+  border-color: #34d399;
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+/* Grid Principal */
+.cm-main-grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.cm-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cm-col-right {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+/* Marcadores Receta vs Fotosíntesis */
+.cm-meters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cm-meter-box {
+  padding: 12px;
+  text-align: center;
+  border: 2px solid rgba(251, 191, 36, 0.7);
+  transition: all 0.2s ease;
+}
+
+.cm-meter-box.is-emerald-border {
+  border-color: rgba(52, 211, 153, 0.7);
+}
+.cm-meter-box.is-green-active {
+  border-color: #34d399;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.35);
+}
+
+.cm-meter-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cm-recipe-values {
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  font-weight: 900;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.cm-meter-val {
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+.cm-meter-sub {
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Cámara Hidropónica */
+.cm-tank-box {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 295px;
+  border: 2px solid rgba(52, 211, 153, 0.5);
+}
+
+.cm-tank-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  z-index: 5;
+}
+
+.cm-tap-hint {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(252, 211, 77, 0.5);
+}
+
+.cm-tank-canvas {
+  width: 100%;
+  flex: 1;
+  border-radius: 12px;
+  margin-top: 6px;
+  cursor: pointer;
+  display: block;
+}
+
+.cm-tank-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #e2e8f0;
+  padding: 6px 8px;
+  background: rgba(2, 6, 23, 0.8);
+  border-radius: 12px;
+  margin-top: 6px;
+}
+
+/* Sliders de Espectro LED */
+.cm-led-card {
+  background: rgba(2, 6, 23, 0.85);
+  border-radius: 16px;
+  padding: 14px;
+}
+.cm-led-card.is-red {
+  border: 2px solid rgba(244, 63, 94, 0.4);
+}
+.cm-led-card.is-blue {
+  border: 2px solid rgba(14, 165, 233, 0.4);
+}
+
+.cm-slider-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.cm-val-badge {
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.cm-val-badge.is-red {
+  background: rgba(244, 63, 94, 0.2);
+  border: 1px solid rgba(251, 113, 133, 0.6);
+  color: #fda4af;
+}
+.cm-val-badge.is-blue {
+  background: rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  color: #7dd3fc;
+}
+.cm-val-badge.is-ok {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid #34d399;
+  color: #6ee7b7;
+}
+
+input[type="range"].cm-led-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: #090e17;
+  border-radius: 999px;
+  outline: none;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.85);
+  cursor: pointer;
+  margin: 8px 0;
+}
+
+input[type="range"].cm-led-slider-red {
+  border: 2.5px solid #fb7185;
+}
+input[type="range"].cm-led-slider-blue {
+  border: 2.5px solid #38bdf8;
+}
+
+input[type="range"].cm-led-slider-red::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fda4af 0%, #e11d48 100%);
+  border: 3px solid #ffe4e6;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(244, 63, 94, 0.9), 0 4px 6px rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease;
+}
+
+input[type="range"].cm-led-slider-blue::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+  border: 3px solid #e0f2fe;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.9), 0 4px 6px rgba(0, 0, 0, 0.55);
+  transition: transform 0.12s ease;
+}
+
+input[type="range"].cm-led-slider-red::-moz-range-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fda4af 0%, #e11d48 100%);
+  border: 3px solid #ffe4e6;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(244, 63, 94, 0.9);
+}
+
+input[type="range"].cm-led-slider-blue::-moz-range-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+  border: 3px solid #e0f2fe;
+  cursor: grab;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.9);
+}
+
+input[type="range"].cm-led-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.cm-slider-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding-inline: 4px;
+}
+
+/* Barra de Raciones Cosechadas */
+.cm-progress-box {
+  padding: 14px;
+  border: 2px solid rgba(52, 211, 153, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cm-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+}
+
+.cm-progress-track {
+  width: 100%;
+  height: 26px;
+  background: #020617;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid #334155;
+  padding: 3px;
+}
+
+.cm-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #10b981 0%, #a3e635 55%, #fcd34d 100%);
+  transition: width 0.15s ease;
+  box-shadow: 0 0 16px rgba(74, 222, 128, 0.7);
+}
+
+/* Overlay de Victoria y Confeti */
+.cm-confetti-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+}
+
+.cm-victory-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  background: rgba(2, 6, 23, 0.82);
+  backdrop-filter: blur(6px);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.cm-victory-overlay.is-hidden {
+  display: none;
+}
+
+.cm-victory-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  border: 2px solid #34d399;
+  box-shadow: 0 0 50px rgba(74, 222, 128, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: cmVictoryPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes cmBotBounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes cmVictoryPop {
+  0% { transform: scale(0.85); opacity: 0; }
+  70% { transform: scale(1.03); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 860px) {
+  .cm-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
