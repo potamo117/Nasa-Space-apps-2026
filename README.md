@@ -4,7 +4,7 @@
 Prototipo web interactivo para **NASA Space Apps 2026**. El jugador administra una base lunar durante 5 días: reparte la electricidad con interruptores, reacciona a eventos aleatorios y resuelve minijuegos científicos para mantener vivos a los astronautas.
 
 - Repositorio: https://github.com/potamo117/Nasa-Space-apps-2026
-- Demo (Vercel): _pendiente de agregar_
+- Demo (Vercel): https://nasaspaceapp2026-taupe.vercel.app/
 
 ## Cómo funciona el juego
 
